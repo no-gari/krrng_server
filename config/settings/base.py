@@ -42,6 +42,7 @@ LOCAL_APPS = [
     'api.logger.apps.LoggerConfig',
     'api.animal.apps.AnimalConfig',
     'api.hospital.apps.HospitalConfig',
+    'api.commerce.apps.CommerceConfig',
     'api.customerservice.apps.CustomerserviceConfig',
 ]
 

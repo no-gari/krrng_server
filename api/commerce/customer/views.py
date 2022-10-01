@@ -1,6 +1,6 @@
 from rest_framework.generics import ListAPIView, RetrieveUpdateAPIView
 from api.commerce.customer.serializers import AddressSerializer
-from api.commerce.customer.models import UserShipping
+from api.commerce.models import UserShipping
 from rest_framework.exceptions import ValidationError
 from rest_framework.decorators import api_view
 from rest_framework.response import Response

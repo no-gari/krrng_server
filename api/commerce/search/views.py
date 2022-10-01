@@ -8,7 +8,7 @@ from rest_framework.generics import ListAPIView
 from rest_framework.decorators import api_view
 from api.commerce.list_helper import get_index
 from rest_framework.response import Response
-from .models import SearchKeywords
+from api.commerce.models import SearchKeywords
 from rest_framework import status
 
 

@@ -1,4 +1,4 @@
-from api.commerce.customer.models import UserShipping, ShippingRequest
+from api.commerce.models import UserShipping, ShippingRequest
 from rest_framework import serializers
 
 

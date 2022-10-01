@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from api.commerce.search.models import SearchKeywords
+from api.commerce.models import SearchKeywords
 
 
 class SearchKeywordSerializer(serializers.ModelSerializer):

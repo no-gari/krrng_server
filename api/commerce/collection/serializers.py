@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import CollectionModel
+from api.commerce.models import CollectionModel
 
 
 class CollectionRetrieveSerializers(serializers.Serializer):
