@@ -38,9 +38,11 @@ DJANGO_APPS = [
 ]
 
 LOCAL_APPS = [
-    'api.logger.apps.LoggerConfig',
     'api.user.apps.UserConfig',
+    'api.logger.apps.LoggerConfig',
+    'api.animal.apps.AnimalConfig',
     'api.hospital.apps.HospitalConfig',
+    'api.customerservice.apps.CustomerserviceConfig',
 ]
 
 # COMMERCE API APPS

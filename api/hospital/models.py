@@ -58,7 +58,7 @@ class HospitalReview(models.Model):
 
 
 class HospitalReviewImage(models.Model):
-    property = models.ForeignKey(HospitalReview, related_name='images', verbose_name='리뷰')
+    property = models.ForeignKey(HospitalReview, related_name='images', verbose_name='리뷰', on_delete=models.CASCADE)
     image = models.ImageField(verbose_name='이미지')
 
     class Meta:
