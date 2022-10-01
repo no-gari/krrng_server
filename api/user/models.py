@@ -1,9 +1,9 @@
 from django.contrib.auth.models import AbstractUser, UserManager as DjangoUserManager
-from django.db import models
-from django.dispatch import receiver
-import uuid
-from django.db.models.signals import post_save
 from django.utils.translation import gettext_lazy as _
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from django.db import models
+import uuid
 
 
 def directory_path(instance, filename):
@@ -46,8 +46,8 @@ class User(AbstractUser):
     phone = models.CharField(verbose_name='휴대폰', max_length=11, null=True, blank=True)
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['']
-    VERIFY_FIELDS = ['']  # 회원가입 시 검증 받을 필드 (email, phone)
+    REQUIRED_FIELDS = []
+    VERIFY_FIELDS = []  # 회원가입 시 검증 받을 필드 (email, phone)
     REGISTER_FIELDS = ['email', 'password']  # 회원가입 시 입력 받을 필드 (email, phone, password)
 
     objects = UserManager()
@@ -64,9 +64,7 @@ class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     nickname = models.CharField(verbose_name='닉네임', max_length=32, default='anonymous user')
     profile_pic = models.ImageField(upload_to=directory_path, verbose_name='프로필 사진', null=True, blank=True)
-    profile_article = models.CharField(max_length=512, verbose_name='프로필 정보', null=True, blank=True)
     birthday = models.DateField(verbose_name='생일', null=True, blank=True)
-    is_creator = models.BooleanField(verbose_name='크리에이터 여부', default=False)
 
     class SexChoices(models.TextChoices):
         MALE = 'MA', _('남자')

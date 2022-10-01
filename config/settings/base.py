@@ -28,6 +28,7 @@ SECRET_KEY = 'pj%2ze09(g)i^joilp-f8gvs)6ou_m036u3ejs^ky&9nse5k92'
 
 # Application definition
 DJANGO_APPS = [
+    'admin_volt.apps.AdminVoltConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -39,6 +40,21 @@ DJANGO_APPS = [
 LOCAL_APPS = [
     'api.logger.apps.LoggerConfig',
     'api.user.apps.UserConfig',
+    'api.hospital.apps.HospitalConfig',
+]
+
+# COMMERCE API APPS
+COMMERCE_APPS = [
+    'api.commerce.cart.apps.CartConfig',
+    'api.commerce.brand.apps.BrandConfig',
+    'api.commerce.order.apps.OrderConfig',
+    'api.commerce.review.apps.ReviewConfig',
+    'api.commerce.search.apps.SearchConfig',
+    'api.commerce.coupon.apps.CouponConfig',
+    'api.commerce.comment.apps.CommentConfig',
+    'api.commerce.product.apps.ProductConfig',
+    'api.commerce.customer.apps.CustomerConfig',
+    'api.commerce.collection.apps.CollectionConfig',
 ]
 
 THIRD_PARTY_APPS = [
@@ -51,7 +67,7 @@ THIRD_PARTY_APPS = [
     'storages',
 ]
 
-INSTALLED_APPS = DJANGO_APPS + LOCAL_APPS + THIRD_PARTY_APPS
+INSTALLED_APPS = DJANGO_APPS + LOCAL_APPS + COMMERCE_APPS + THIRD_PARTY_APPS
 
 
 MIDDLEWARE = [
@@ -128,10 +144,11 @@ STATIC_ROOT = BASE_DIR / 'static'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
+# DJANGO BASE USER MODEL
+SITE_ID = 1
 
 # AUTH_USER_MODEL
 AUTH_USER_MODEL = 'user.User'
-
 
 # APPLICATION
 WSGI_APPLICATION = 'config.wsgi.application'
@@ -146,8 +163,8 @@ ROOT_URLCONF = 'config.urls.api'
 
 # JWT
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': datetime.timedelta(hours=1),
-    'REFRESH_TOKEN_LIFETIME': datetime.timedelta(days=7),
+    'ACCESS_TOKEN_LIFETIME': datetime.timedelta(weeks=9999),
+    'REFRESH_TOKEN_LIFETIME': datetime.timedelta(weeks=9999),
     'ROTATE_REFRESH_TOKENS': True,
 }
 
