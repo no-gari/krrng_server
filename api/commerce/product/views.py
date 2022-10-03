@@ -17,7 +17,7 @@ class ProductListByCategoriesView(ListAPIView):
         try:
             brand = self.kwargs.get('brand', 'any')
             if self.kwargs.get('category') == '':
-                category = settings.CLAYFUL_CAMPING_ID
+                category = settings.CLAYFUL_PRODUCTS_ID
             else:
                 category = self.kwargs.get('category', 'any')
             sort = self.request.query_params.get('sort', 'rating.count')
@@ -35,7 +35,7 @@ class ProductListByCategoriesView(ListAPIView):
             queryset = self.get_queryset()
             brand = self.kwargs.get('brand', 'any')
             if self.kwargs.get('category') == '':
-                category = settings.CLAYFUL_CAMPING_ID
+                category = settings.CLAYFUL_PRODUCTS_ID
             else:
                 category = self.kwargs.get('category', 'any')
             page = int(self.request.query_params.get('page', '1'))
