@@ -1,7 +1,15 @@
 from django.contrib.auth.models import AbstractUser, UserManager as DjangoUserManager
 from django.utils.translation import gettext_lazy as _
-from api.utils import FilenameChanger
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 from django.db import models
+import uuid
+
+
+def directory_path(instance, filename):
+    ext = filename.split('.')[-1]
+    filename = "%s.%s" % (uuid.uuid4(), ext)
+    return 'user_{0}/{1}'.format(instance.user.id, filename)
 
 
 class UserManager(DjangoUserManager):
@@ -59,21 +67,28 @@ class User(AbstractUser):
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    nickname = models.CharField(max_length=32, verbose_name=_('닉네임'), null=True, blank=True)
-    profile_image = models.ImageField(verbose_name=_('프로필 사진'), null=True, blank=True, upload_to=FilenameChanger('profile'))
-    created_at = models.DateTimeField(verbose_name=_('생성 일자'), auto_now_add=True, null=True, blank=True)
-    kind = models.CharField(max_length=32, verbose_name=_('종류'), null=True, blank=True)
-    code = models.CharField(max_length=1024, verbose_name=_('SNS 고유 코드'), null=True, blank=True)
-    points = models.PositiveIntegerField(default=0, verbose_name=_('포인트'))
-    firebase_token = models.CharField(max_length=1024, verbose_name=_('파이어베이스 토큰'), null=True, blank=True)
-    clayful_token = models.CharField(max_length=1024, verbose_name=_('클레이풀 토큰'), null=True, blank=True)
+    nickname = models.CharField(verbose_name='닉네임', max_length=32, default='anonymous user')
+    profile_pic = models.ImageField(upload_to=directory_path, verbose_name='프로필 사진', null=True, blank=True)
+    birthday = models.DateField(verbose_name='생일', null=True, blank=True)
 
-    class Meta:
-        verbose_name = '프로필'
-        verbose_name_plural = verbose_name
+    class SexChoices(models.TextChoices):
+        MALE = 'MA', _('남자')
+        FEMALE = 'FE', _('여자')
+
+    sex_choices = models.CharField(
+        max_length=2,
+        choices=SexChoices.choices,
+        default=SexChoices.MALE,
+    )
 
     def __str__(self):
-        return self.user.email + '의 프로필'
+        return self.user.username + ' 의 프로필'
+
+    @receiver(post_save, sender=User)
+    def create_user_profile(sender, instance, created, **kwargs):
+        if created:
+            profile = Profile.objects.create(user=instance)
+            profile.save()
 
 
 class SocialKindChoices(models.TextChoices):
