@@ -1,82 +1,152 @@
-import hashlib, random, secrets, string, requests
-
+import random
+import hashlib
 from django.conf import settings
-from django.core.exceptions import ValidationError as DjangoValidationError
 from django.db import transaction
 from django.utils import timezone
+from api.logger.models import PhoneLog
 from rest_framework import serializers
+from django.core.validators import validate_email
+from api.user.validators import validate_password
+from api.clayful_client import ClayfulCustomerClient
+from django.contrib.auth.hashers import make_password
 from rest_framework.exceptions import ValidationError
 from rest_framework_simplejwt.tokens import RefreshToken
-
-from api.user.models import User, Profile, EmailVerifier, PhoneVerifier
-from api.user.validators import validate_password, string_trim_validator, ascii_username_validator,\
-    custom_length_validator, email_verifier
-from django.core.mail import send_mail, EmailMessage
-from django.contrib.auth.hashers import check_password
+from django.core.exceptions import ValidationError as DjangoValidationError
+from api.user.models import User, EmailVerifier, PhoneVerifier, SocialKindChoices, Profile
 
 
-class UserRegisterSerializer(serializers.Serializer):
-    email = serializers.CharField(write_only=True, required=False)
-    email_token = serializers.CharField(write_only=True, required=False)
-    phone = serializers.CharField(write_only=True, required=False)
-    phone_token = serializers.CharField(write_only=True, required=False)
-    password = serializers.CharField(write_only=True, required=False)
-    password_confirm = serializers.CharField(write_only=True, required=False)
-
+class UserSocialLoginSerializer(serializers.Serializer):
     access = serializers.CharField(read_only=True)
     refresh = serializers.CharField(read_only=True)
 
-    def get_fields(self):
-        fields = super().get_fields()
+    code = serializers.CharField(write_only=True)
+    email = serializers.CharField(write_only=True)
+    nickname = serializers.CharField(write_only=True)
+    social_type = serializers.CharField(write_only=True)
 
-        if 'email' in User.VERIFY_FIELDS:
-            fields['email_token'].required = True
-        if 'email' in User.VERIFY_FIELDS or 'email' in User.REGISTER_FIELDS:
-            fields['email'].required = True
-        if 'phone' in User.VERIFY_FIELDS:
-            fields['phone_token'].required = True
-        if 'phone' in User.VERIFY_FIELDS or 'phone' in User.REGISTER_FIELDS:
-            fields['phone'].required = True
-        if 'password' in User.REGISTER_FIELDS:
-            fields['password'].required = True
-            fields['password_confirm'].required = True
+    def validate(self, attrs):
+        code = attrs['code']
+        email = attrs['email']
+        nickname = attrs['nickname']
+        social_type = attrs['social_type']
 
-        return fields
+        if social_type not in SocialKindChoices:
+            raise ValidationError({'kind': '지원하지 않는 소셜 타입입니다.'})
+
+        return attrs
+
+    @transaction.atomic
+    def create(self, validated_data):
+        code = validated_data['code']
+        email = validated_data['email']
+        nickname = validated_data['nickname']
+        social_type = validated_data['social_type']
+        user, created = User.objects.get_or_create(email=email, defaults={'password': make_password(None)})
+
+        if created:
+            clayful_customer_client = ClayfulCustomerClient()
+            clayful_register = clayful_customer_client.clayful_register(email=email, nickname=nickname)
+
+            if not clayful_register.status == 201:
+                user.delete()
+                raise ValidationError({'error_msg': '서버 에러입니다. 다시 시도해주세요.'})
+            else:
+                clayful_login = clayful_customer_client.clayful_login(email=email)
+                token = clayful_login.data['token']
+                user_id = clayful_login.data['customer']
+
+            user_profile = Profile.objects.create(user=user, clayful_token=token, nickname=nickname, kind=social_type, code=code)
+            clayful_customer_client.clayful_customer_add_coupon(customer_id=user_id, coupon_id=settings.CLAYFUL_COUPON_ID)
+            user_profile.save()
+
+        refresh = RefreshToken.for_user(user)
+        return {
+            'access': refresh.access_token,
+            'refresh': refresh,
+        }
+
+
+class UserRegisterSerializer(serializers.Serializer):
+    email = serializers.CharField(write_only=True, required=True)
+    password = serializers.CharField(write_only=True, required=True)
+    access = serializers.CharField(read_only=True)
+    refresh = serializers.CharField(read_only=True)
 
     def validate(self, attrs):
         email = attrs.get('email')
-        email_token = attrs.pop('email_token', None)
-        phone = attrs.get('phone')
-        phone_token = attrs.pop('phone_token', None)
 
-        password = attrs.get('password')
-        password_confirm = attrs.pop('password_confirm', None)
-
-        if 'email' in User.VERIFY_FIELDS:
-            # 이메일 토큰 검증
-            try:
-                self.email_verifier = EmailVerifier.objects.get(email=email, token=email_token)
-            except EmailVerifier.DoesNotExist:
-                raise ValidationError('이메일 인증을 진행해주세요.')
-        if 'email' in User.VERIFY_FIELDS or 'email' in User.REGISTER_FIELDS:
-            # 이메일 검증
+        if 'email' in User.REGISTER_FIELDS:
             if User.objects.filter(email=email).exists():
                 raise ValidationError({'email': ['이미 가입된 이메일입니다.']})
+        return attrs
 
-        if 'phone' in User.VERIFY_FIELDS:
-            # 휴대폰 토큰 검증
-            try:
-                self.phone_verifier = PhoneVerifier.objects.get(phone=phone, token=phone_token)
-            except PhoneVerifier.DoesNotExist:
-                raise ValidationError('휴대폰 인증을 진행해주세요.')
-        if 'phone' in User.VERIFY_FIELDS or 'phone' in User.REGISTER_FIELDS:
-            # 휴대폰 검증
-            if User.objects.filter(phone=phone).exists():
-                raise ValidationError({'phone': ['이미 가입된 휴대폰입니다.']})
+    def validate(self, attrs):
+        email = attrs['email']
+        password = attrs['password']
 
-        if 'password' in User.REGISTER_FIELDS:
-            errors = {}
-            # 비밀번호 검증
+        try:
+            validate_email(email)
+        except:
+            raise ValidationError({'error_msg': '이메일 형식이 아닙니다.'})
+
+        return attrs
+
+    @transaction.atomic
+    def create(self, validated_data):
+        email = validated_data['email']
+        password = validated_data['password']
+        user, created = User.objects.get_or_create(email=email, defaults={'password': make_password(password)})
+
+        if created:
+            clayful_customer_client = ClayfulCustomerClient()
+            clayful_register = clayful_customer_client.clayful_register(email=email, nickname='용감한 거북이')
+
+            if not clayful_register.status == 201:
+                user.delete()
+                raise ValidationError({'error_msg': '서버 에러입니다. 다시 시도해주세요.'})
+            else:
+                clayful_login = clayful_customer_client.clayful_login(email=email)
+                token = clayful_login.data['token']
+                user_id = clayful_login.data['customer']
+
+            user_profile = Profile.objects.create(user=user, clayful_token=token, nickname='용감한 거북이')
+            clayful_customer_client.clayful_customer_add_coupon(customer_id=user_id, coupon_id=settings.CLAYFUL_COUPON_ID)
+            user_profile.save()
+
+        refresh = RefreshToken.for_user(user)
+        return {
+            'access': refresh.access_token,
+            'refresh': refresh,
+        }
+
+
+class ProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Profile
+        fields = ['nickname', 'profile_image', 'points', 'firebase_token']
+
+
+class UserDetailUpdateSerializer(serializers.ModelSerializer):
+    name = serializers.CharField(read_only=True)
+    password = serializers.CharField(write_only=True, allow_blank=True)
+    password_confirm = serializers.CharField(write_only=True, allow_blank=True)
+
+    class Meta:
+        model = User
+        fields = ['id', 'email', 'name', 'password', 'password_confirm']
+
+    def validate(self, attrs):
+        password = attrs.get('password')
+        password_confirm = attrs.get('password_confirm')
+
+        errors = {}
+
+        # 이메일 검증
+        if self.instance.is_social:
+            attrs['email'] = self.instance.email
+
+        # 비밀번호 검증
+        if password or password_confirm:
             if password != password_confirm:
                 errors['password'] = ['비밀번호가 일치하지 않습니다.']
                 errors['password_confirm'] = ['비밀번호가 일치하지 않습니다.']
@@ -86,28 +156,20 @@ class UserRegisterSerializer(serializers.Serializer):
                 except DjangoValidationError as error:
                     errors['password'] = list(error)
                     errors['password_confirm'] = list(error)
+            attrs['password'] = make_password(password)
+        else:
+            attrs['password'] = self.instance.password
 
-            if errors:
-                raise ValidationError(errors)
+        if errors:
+            raise ValidationError(errors)
 
         return attrs
 
     @transaction.atomic
-    def create(self, validated_data):
-        user = User.objects.create_user(
-            **validated_data,
-        )
-        if 'email' in User.VERIFY_FIELDS:
-            self.email_verifier.delete()
-        if 'phone' in User.VERIFY_FIELDS:
-            self.phone_verifier.delete()
-
-        refresh = RefreshToken.for_user(user)
-
-        return {
-            'access': refresh.access_token,
-            'refresh': refresh,
-        }
+    def update(self, instance, validated_data):
+        instance.__dict__.update(validated_data)
+        instance.save()
+        return instance
 
 
 class EmailVerifierCreateSerializer(serializers.ModelSerializer):
@@ -116,14 +178,14 @@ class EmailVerifierCreateSerializer(serializers.ModelSerializer):
         fields = ['email']
 
     def validate(self, attrs):
-        email_to = attrs['email']
+        email = attrs['email']
 
-        if User.objects.filter(email=email_to).exists():
+        if User.objects.filter(email=email).exists():
             raise ValidationError({'email': ['이미 존재하는 이메일입니다.']})
 
-        code = ''.join([str(random.randint(1, 9)) for i in range(6)])
+        code = ''.join([str(random.randint(0, 9)) for i in range(6)])
         created = timezone.now()
-        hash_string = str(email_to) + code + str(created.timestamp())
+        hash_string = str(email) + code + str(created.timestamp())
         token = hashlib.sha1(hash_string.encode('utf-8')).hexdigest()
 
         attrs.update({
@@ -133,20 +195,19 @@ class EmailVerifierCreateSerializer(serializers.ModelSerializer):
         })
 
         try:
-            msg = EmailMessage('Cluv 인증번호 발급',
-                               str(code), to=[email_to])
-            msg.send()
+            self.send_code(attrs)
         except Exception:
             raise ValidationError('인증번호 전송 실패')
 
         return attrs
 
     def send_code(self, attrs):
-        pass
+        body = f'아키디카 회원가입 인증번호: [{attrs["code"]}]'
+        PhoneLog.objects.create(to=attrs['phone'], body=body)
 
 
 class EmailVerifierConfirmSerializer(serializers.ModelSerializer):
-    email = serializers.EmailField
+    email = serializers.EmailField(write_only=True)
     code = serializers.CharField(write_only=True)
     email_token = serializers.CharField(read_only=True, source='token')
 
@@ -165,35 +226,24 @@ class EmailVerifierConfirmSerializer(serializers.ModelSerializer):
         attrs.update({'token': email_verifier.token})
         return attrs
 
-    def create(self, validated_data, *args, **kwargs):
-        return validated_data
-
-
-class NicknameCreateUpdateSerializer(serializers.ModelSerializer):
-    nickname = serializers.CharField()
-
-    class Meta:
-        model = Profile
-        fields = ['id', 'nickname', 'birthday', 'sex_choices']
-
     def create(self, validated_data):
         return validated_data
 
 
-class FindPasswordVerifierCreateSerializer(serializers.ModelSerializer):
+class PhoneVerifierCreateSerializer(serializers.ModelSerializer):
     class Meta:
-        model = EmailVerifier
-        fields = ['email']
+        model = PhoneVerifier
+        fields = ['phone']
 
     def validate(self, attrs):
-        email_to = attrs['email']
+        phone = attrs['phone']
 
-        if not User.objects.filter(email=email_to).exists():
-            raise ValidationError({'email': ['가입되지 않은 이메일입니다.']})
+        if User.objects.filter(phone=phone).exists():
+            raise ValidationError({'phone': ['이미 존재하는 휴대폰입니다.']})
 
-        code = ''.join([str(random.randint(1, 9)) for i in range(6)])
+        code = ''.join([str(random.randint(0, 9)) for i in range(6)])
         created = timezone.now()
-        hash_string = str(email_to) + code + str(created.timestamp())
+        hash_string = str(phone) + code + str(created.timestamp())
         token = hashlib.sha1(hash_string.encode('utf-8')).hexdigest()
 
         attrs.update({
@@ -203,13 +253,7 @@ class FindPasswordVerifierCreateSerializer(serializers.ModelSerializer):
         })
 
         try:
-            msg = requests.post(
-        		"https://api.mailgun.net/v3/sandbox97825590c11a4f5e8431798ffbf0fe5d.mailgun.org/messages",
-        		auth=("api", "302b470527bf17f74f7127af6ef0fe80-4de08e90-e60a59fe"),
-        		data={"from": "no-reply<mail@dailyz.me>",
-    			"to": [email_to],
-    			"subject": code,
-	    		"text": code})
+            self.send_code(attrs)
         except Exception:
             raise ValidationError('인증번호 전송 실패')
 
@@ -219,71 +263,25 @@ class FindPasswordVerifierCreateSerializer(serializers.ModelSerializer):
         pass
 
 
-class FindPasswordVerifierConfirmSerializer(serializers.ModelSerializer):
-    email = serializers.EmailField
+class PhoneVerifierConfirmSerializer(serializers.ModelSerializer):
+    phone = serializers.CharField(write_only=True)
     code = serializers.CharField(write_only=True)
-    temporary_password = serializers.CharField(read_only=True)
+    phone_token = serializers.CharField(read_only=True, source='token')
 
     class Meta:
-        model = EmailVerifier
-        fields = ['email', 'code', 'temporary_password']
+        model = PhoneVerifier
+        fields = ['phone', 'code', 'phone_token']
 
     def validate(self, attrs):
-        email = attrs['email']
+        phone = attrs['phone']
         code = attrs['code']
         try:
-            email_verifier_obj = self.Meta.model.objects.get(email=email, code=code)
+            phone_verifier = self.Meta.model.objects.get(phone=phone, code=code)
         except self.Meta.model.DoesNotExist:
             raise ValidationError({'code': ['인증번호가 일치하지 않습니다.']})
-        user = User.objects.get(email=email)
-        alphabet = string.ascii_letters + string.digits
-        temporary_password = ''.join(secrets.choice(alphabet) for i in range(8))
-        user.set_password(raw_password=temporary_password)
-        user.save()
-        email_verifier_obj.delete()
-        attrs.update({'temporary_password': temporary_password})
 
+        attrs.update({'token': phone_verifier.token})
         return attrs
 
-    def create(self, validated_data, *args, **kwargs):
-        return validated_data
-
-
-class ChangePasswordSerializer(serializers.ModelSerializer):
-    old_password = serializers.CharField(write_only=True)
-    new_password = serializers.CharField(write_only=True)
-    new_password_confirm = serializers.CharField(write_only=True)
-
-    class Meta:
-        model = User
-        fields = ['old_password', 'new_password_confirm', 'new_password']
-
-    def validate(self, attrs):
-        old_password = attrs['old_password']
-        new_password = attrs['new_password']
-        new_password_confirm = attrs['new_password_confirm']
-        user = self.instance
-        if check_password(old_password, user.password) is False:
-            raise ValidationError({'msg' : '기존 비밀번호를 다시 확인해 주세요.'})
-        if new_password == new_password_confirm and validate_password(new_password) is True:
-            user.set_password(raw_password=new_password)
-            user.save()
-        return attrs
-
-
-class ProfileSerializers(serializers.ModelSerializer):
-    profile_pic = serializers.CharField()
-    nickname = serializers.CharField()
-    profile_article = serializers.CharField()
-
-    class Meta:
-        model = Profile
-        fields = ['profile_pic', 'nickname', 'profile_article']
-
-    def validate(self, attrs, *args, **kwargs):
-        contents = attrs['contents']
-        user_id = self.request.user.id
-        return attrs
-
-    def update(self, validated_data, *args, **kwargs):
+    def create(self, validated_data):
         return validated_data
