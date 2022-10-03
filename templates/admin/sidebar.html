@@ -2,8 +2,8 @@
 
 <nav class="navbar navbar-dark navbar-theme-primary px-4 col-12 d-lg-none">
     <a class="navbar-brand me-lg-5" href="/">
-        <img class="navbar-brand-dark" src="{% static 'admin_volt/assets/img/brand/light.svg' %}" alt="Volt logo"/>
-        <img class="navbar-brand-light" src="{% static 'admin_volt/assets/img/brand/dark.svg' %}" alt="Volt logo"/>
+        <img class="navbar-brand-dark" src="https://github.com/cheonhyeonjin/krrng/blob/main/krrng.jpg?raw=true" alt="Volt logo"/>
+        <img class="navbar-brand-light" src="https://github.com/cheonhyeonjin/krrng/blob/main/krrng.jpg?raw=true" alt="Volt logo"/>
     </a>
     <div class="d-flex align-items-center">
         <button class="navbar-toggler d-lg-none collapsed" type="button" data-bs-toggle="collapse"
@@ -19,7 +19,7 @@
         <div class="user-card d-flex d-md-none align-items-center justify-content-between justify-content-md-center pb-4">
             <div class="d-flex align-items-center">
                 <div class="d-block">
-                    <h2 class="h5 mb-3">Hi, {{ request.user.first_name|default:request.user.username }}</h2>
+                    <h2 class="h5 mb-3">반가워요 {{ request.user.email }}님</h2>
                     <a href="#" class="btn btn-secondary btn-sm d-inline-flex align-items-center">
                         <span class="fa fa-sign-out"></span> Sign Out
                     </a>
