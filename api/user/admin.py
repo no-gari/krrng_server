@@ -21,8 +21,8 @@ class ProfileRetrieveUpdateAdmin(admin.ModelAdmin):
 # class SocialAdmin(admin.ModelAdmin):
 #     pass
 
-
-@admin.register(PhoneVerifier)
-class PhoneVerifierAdmin(admin.ModelAdmin):
-    pass
-
+#
+# @admin.register(PhoneVerifier)
+# class PhoneVerifierAdmin(admin.ModelAdmin):
+#     pass
+#

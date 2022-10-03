@@ -82,13 +82,17 @@ class Profile(models.Model):
     )
 
     def __str__(self):
-        return self.user.username + ' 의 프로필'
+        return self.user.email + ' 의 프로필'
 
     @receiver(post_save, sender=User)
     def create_user_profile(sender, instance, created, **kwargs):
         if created:
             profile = Profile.objects.create(user=instance)
             profile.save()
+
+    class Meta:
+        verbose_name = '프로필'
+        verbose_name_plural = verbose_name
 
 
 class SocialKindChoices(models.TextChoices):
