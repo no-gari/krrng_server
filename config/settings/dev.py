@@ -23,10 +23,10 @@ if DB == 'mysql':
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.mysql',
-            'NAME': 'cluvdev',
-            'USER': 'cluvdev',
-            'PASSWORD': 'cluvdev!',
-            'HOST': 'cluvdev.cvafhkpkq1mm.ap-northeast-2.rds.amazonaws.com',
+            'NAME': 'krrngrds',
+            'USER': 'krrngrds',
+            'PASSWORD': 'krrngrds',
+            'HOST': 'krrngrds.ci0gyj4wz5ig.ap-northeast-2.rds.amazonaws.com',
             'PORT': '3306',
         }
     }
@@ -40,11 +40,11 @@ if USE_S3:
 
 AWS_S3_SECURE_URLS = True
 AWS_REGION = 'ap-northeast-2'
-AWS_STORAGE_BUCKET_NAME = 'cluvdevs3'
+AWS_STORAGE_BUCKET_NAME = 'krrng'
 AWS_QUERYSTRING_AUTH = False
 AWS_S3_HOST = 's3.%s.amazonaws.com' % AWS_REGION
-AWS_ACCESS_KEY_ID = 'AKIAWHQBQEAQJ4AO2OMN'
-AWS_SECRET_ACCESS_KEY = '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'
+AWS_ACCESS_KEY_ID = 'AKIATHT2BVX2LCU2YP6U'
+AWS_SECRET_ACCESS_KEY = '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'
 AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
 AWS_DEFAULT_ACL = None
 AWS_S3_OBJECT_PARAMETERS = {
