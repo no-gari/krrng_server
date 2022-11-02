@@ -57,6 +57,7 @@ THIRD_PARTY_APPS = [
     'django_hosts',
     'drf_yasg',
     'storages',
+    'django_s3_storage'
 ]
 
 INSTALLED_APPS = DJANGO_APPS + LOCAL_APPS + COMMERCE_APPS + THIRD_PARTY_APPS
