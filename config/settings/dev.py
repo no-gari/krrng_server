@@ -52,11 +52,12 @@ if DB == 'mysql':
 # }
 
 STATIC_URL = '/dev/static/'       # Use the name of your staging environment (e.g. production)
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 WHITENOISE_STATIC_PREFIX = '/static/'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 YOUR_S3_BUCKET = "krrng"
 
-STATICFILES_STORAGE = "django_s3_storage.storage.StaticS3Storage"
 AWS_S3_BUCKET_NAME_STATIC = "krrng"
 
 AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % YOUR_S3_BUCKET
