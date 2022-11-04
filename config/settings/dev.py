@@ -9,14 +9,14 @@ pymysql.install_as_MySQLdb()
 class SecurityTokenWorkaroundS3Boto3Storage(S3Boto3Storage):
     def _get_security_token(self):
         return None
-
-
-class MediaStorage(SecurityTokenWorkaroundS3Boto3Storage):
-    location = settings.MEDIA_URL
-
-
-class StaticStorage(SecurityTokenWorkaroundS3Boto3Storage):
-    location = settings.STATIC_URL
+#
+#
+# class MediaStorage(SecurityTokenWorkaroundS3Boto3Storage):
+#     location = settings.MEDIA_URL
+#
+#
+# class StaticStorage(SecurityTokenWorkaroundS3Boto3Storage):
+#     location = settings.STATIC_URL
 
 
 DEBUG = True
