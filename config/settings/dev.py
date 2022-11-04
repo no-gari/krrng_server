@@ -1,8 +1,20 @@
 from .base import *
 import pymysql
 import os
-
+from django.conf import settings
+from storages.backends.s3boto3 import S3Boto3Storage
 pymysql.install_as_MySQLdb()
+
+
+class SecurityTokenWorkaroundS3Boto3Storage(S3Boto3Storage):
+    def _get_security_token(self):
+        return None
+
+class MediaStorage(SecurityTokenWorkaroundS3Boto3Storage):
+    location = settings.MEDIAFILES_LOCATION
+
+class StaticStorage(SecurityTokenWorkaroundS3Boto3Storage):
+    location = settings.STATICFILES_LOCATION
 
 DEBUG = True
 
