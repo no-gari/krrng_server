@@ -10,11 +10,14 @@ class SecurityTokenWorkaroundS3Boto3Storage(S3Boto3Storage):
     def _get_security_token(self):
         return None
 
+
 class MediaStorage(SecurityTokenWorkaroundS3Boto3Storage):
-    location = settings.MEDIAFILES_LOCATION
+    location = settings.MEDIA_URL
+
 
 class StaticStorage(SecurityTokenWorkaroundS3Boto3Storage):
-    location = settings.STATICFILES_LOCATION
+    location = settings.STATIC_URL
+
 
 DEBUG = True
 
