@@ -51,16 +51,27 @@ if DB == 'mysql':
 #     'CacheControl': 'max-age=86400',
 # }
 
-STATIC_URL = '/dev/static/'       # Use the name of your staging environment (e.g. production)
+
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 WHITENOISE_STATIC_PREFIX = '/static/'
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+STATICFILES_STORAGE = 'storages.backends.s3boto3.S3StaticStorage'
 
-YOUR_S3_BUCKET = "krrng"
+# STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
+AWS_STORAGE_BUCKET_NAME = "krrng"
 AWS_S3_BUCKET_NAME_STATIC = "krrng"
 
-AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % YOUR_S3_BUCKET
+AWS_REGION = 'ap-northeast-2'
+AWS_QUERYSTRING_AUTH = False
+AWS_S3_HOST = 's3.%s.amazonaws.com' % AWS_REGION
+AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
+STATIC_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/static/"
 
 AWS_ACCESS_KEY_ID = 'AKIATHT2BVX2LCU2YP6U'
 AWS_SECRET_ACCESS_KEY = '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'
+
+AWS_DEFAULT_ACL = None
+AWS_S3_OBJECT_PARAMETERS = {
+    'CacheControl': 'max-age=86400',
+}
