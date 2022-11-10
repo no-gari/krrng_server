@@ -4,29 +4,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from sdk.api.message import Message
 from sdk.exceptions import CoolsmsException
-
 from api.logger.models import EmailLog, PhoneLog
-
-
-@receiver(post_save, sender=EmailLog)
-def send_mail_gun(sender, instance, created, *args, **kwargs):
-    if created:
-        url = f'https://api.mailgun.net/v3/{settings.MAILGUM_DOMAIN}/messages'
-        headers = {
-            'Authorization': f'api {settings.MAILGUM_API_KEY}'
-        }
-        data = {
-            'from': settings.MAILGUM_FROM_EMAIL,
-            'to': [instance.to],
-            'subject': instance.title,
-            'html': instance.body,
-        }
-        response = requests.request(method='post', url=url, headers=headers, data=data)
-        if response.status_code != 200:
-            instance.status = 'F'
-        else:
-            instance.status = 'S'
-        instance.save()
 
 
 @receiver(post_save, sender=PhoneLog)

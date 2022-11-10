@@ -1,7 +1,5 @@
 from django.contrib.auth.models import AbstractUser, UserManager as DjangoUserManager
 from django.utils.translation import gettext_lazy as _
-from django.db.models.signals import post_save
-from django.dispatch import receiver
 from django.db import models
 import uuid
 
@@ -66,10 +64,13 @@ class User(AbstractUser):
 
 
 class Profile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    kind = models.CharField(max_length=32, verbose_name=_('종류'), null=True, blank=True)
     nickname = models.CharField(verbose_name='닉네임', max_length=32, default='anonymous user')
-    profile_pic = models.ImageField(upload_to=directory_path, verbose_name='프로필 사진', null=True, blank=True)
+    profile_image = models.ImageField(upload_to=directory_path, verbose_name='프로필 사진', null=True, blank=True)
     birthday = models.DateField(verbose_name='생일', null=True, blank=True)
+    code = models.CharField(max_length=1024, verbose_name=_('SNS 고유 코드'), null=True, blank=True)
+    points = models.PositiveIntegerField(default=0, verbose_name=_('포인트'))
 
     class SexChoices(models.TextChoices):
         MALE = 'MA', _('남자')
@@ -83,12 +84,6 @@ class Profile(models.Model):
 
     def __str__(self):
         return self.user.email + ' 의 프로필'
-
-    @receiver(post_save, sender=User)
-    def create_user_profile(sender, instance, created, **kwargs):
-        if created:
-            profile = Profile.objects.create(user=instance)
-            profile.save()
 
     class Meta:
         verbose_name = '프로필'
@@ -110,5 +105,4 @@ class EmailVerifier(models.Model):
 class PhoneVerifier(models.Model):
     phone = models.CharField(verbose_name='휴대폰번호', max_length=11)
     code = models.CharField(verbose_name='인증번호', max_length=6)
-    token = models.CharField(verbose_name='토큰', max_length=40)
-    created = models.DateTimeField(verbose_name='생성일시')
+    created = models.DateTimeField(verbose_name='생성일시', auto_now_add=True)
