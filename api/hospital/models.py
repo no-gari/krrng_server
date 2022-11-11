@@ -18,12 +18,20 @@ class AvailableAnimal(models.Model):
         verbose_name_plural = verbose_name
 
 
-class HopitalPrice(models.Model):
-    name = models.CharField(max_length=128, verbose_name='진료 항목')
-    price = models.CharField(max_length=128, verbose_name='가격')
+class Disease(models.Model):
+    name = models.CharField(max_length=128, verbose_name='정확한 질병명')
 
     class Meta:
-        verbose_name = '병원비'
+        verbose_name = '질병 명'
+        verbose_name_plural = verbose_name
+
+
+class Symptoms(models.Model):
+    models.ForeignKey(Disease, verbose_name='증상', on_delete=models.CASCADE)
+    name = models.CharField(max_length=128, verbose_name='증상명')
+
+    class Meta:
+        verbose_name = '증상 명'
         verbose_name_plural = verbose_name
 
 
@@ -35,20 +43,31 @@ class Hospital(models.Model):
     rest_date = models.CharField(max_length=512, verbose_name='휴무일')
     available_animal = models.ManyToManyField(AvailableAnimal, verbose_name='진료 가능 동물')
     best_part = models.ManyToManyField(BestPart, verbose_name='특화 분야')
-    hospital_price = models.ManyToManyField(HopitalPrice, verbose_name='병원비')
     is_visible = models.BooleanField(default=True, verbose_name='노출 여부')
     address = models.CharField(max_length=1024, verbose_name='도로명 주소', null=True, blank=True)
     address_detail = models.CharField(max_length=1024, verbose_name='상세 주소', null=True, blank=True)
     latitude = models.CharField(max_length=512, verbose_name='위도', null=True, blank=True)
     longitude = models.CharField(max_length=512, verbose_name='경도', null=True, blank=True)
+    recommend_number = models.IntegerField(verbose_name='추천 가중치', default=0, null=True, blank=True, help_text='숫자가 높을수록 추천 순위가 높습니다. 기본 추천 가중치는 0입니다.')
 
     class Meta:
         verbose_name = '병원'
         verbose_name_plural = verbose_name
 
 
+class HospitalPrice(models.Model):
+    models.ForeignKey(Disease, verbose_name='질병', on_delete=models.CASCADE)
+    models.ForeignKey(Hospital, verbose_name='병원 명', on_delete=models.CASCADE)
+    name = models.CharField(max_length=128, verbose_name='진료 항목')
+    price = models.CharField(max_length=128, verbose_name='가격')
+
+    class Meta:
+        verbose_name = '진료비'
+        verbose_name_plural = verbose_name
+
+
 class HospitalImage(models.Model):
-    hospital = models.ForeignKey(Hospital, verbose_name='병원', related_name='hospital', on_delete=models.CASCADE)
+    hospital = models.ForeignKey(Hospital, verbose_name='병원', on_delete=models.CASCADE)
     image = models.ImageField(verbose_name='이미지')
 
     class Meta:
@@ -60,7 +79,7 @@ class HospitalReview(models.Model):
     user = models.ForeignKey(User, verbose_name='유저', on_delete=models.CASCADE)
     hospital = models.ForeignKey(Hospital, verbose_name='병원', on_delete=models.CASCADE)
     diagnosis = models.CharField(max_length=128, verbose_name='진료 항목')
-    receipt = models.ImageField(verbose_name='영수증')
+    receipt = models.ImageField(verbose_name='영수증 사진')
     review = models.TextField(verbose_name='리뷰 내용')
     likes = models.IntegerField(verbose_name='좋아요 수')
     rates = models.FloatField(verbose_name='리뷰 별점', default=5)
@@ -71,7 +90,7 @@ class HospitalReview(models.Model):
 
 
 class HospitalReviewImage(models.Model):
-    property = models.ForeignKey(HospitalReview, related_name='images', verbose_name='리뷰', on_delete=models.CASCADE)
+    hospital_review = models.ForeignKey(HospitalReview, verbose_name='리뷰', on_delete=models.CASCADE)
     image = models.ImageField(verbose_name='이미지')
 
     class Meta:

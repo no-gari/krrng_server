@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import  Hospital, HopitalPrice, BestPart, AvailableAnimal
+from .models import Hospital, HospitalPrice, BestPart, AvailableAnimal, Symptoms, Disease
 
 
 @admin.register(Hospital)
@@ -7,8 +7,18 @@ class HospitalAdmin(admin.ModelAdmin):
     pass
 
 
-@admin.register(HopitalPrice)
+@admin.register(HospitalPrice)
 class HospitalPriceAdmin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(Symptoms)
+class SymptomsAdmin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(Disease)
+class DiseaseAdmin(admin.ModelAdmin):
     pass
 
 
