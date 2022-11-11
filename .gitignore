@@ -6,3 +6,4 @@
 
 /venv
 .aws
+/staticfiles
