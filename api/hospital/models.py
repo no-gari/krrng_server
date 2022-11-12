@@ -10,6 +10,9 @@ class BestPart(models.Model):
         verbose_name = '특화 분야'
         verbose_name_plural = verbose_name
 
+    def __str__(self):
+        return self.name
+
 
 class AvailableAnimal(models.Model):
     animal = models.CharField(max_length=64, verbose_name='진료 동물')
@@ -17,6 +20,9 @@ class AvailableAnimal(models.Model):
     class Meta:
         verbose_name = '진료 동물'
         verbose_name_plural = verbose_name
+
+    def __str__(self):
+        return self.animal
 
 
 class Hospital(models.Model):
@@ -32,11 +38,14 @@ class Hospital(models.Model):
     address_detail = models.CharField(max_length=1024, verbose_name='상세 주소', null=True, blank=True)
     latitude = models.CharField(max_length=512, verbose_name='위도', null=True, blank=True)
     longitude = models.CharField(max_length=512, verbose_name='경도', null=True, blank=True)
-    recommend_number = models.IntegerField(verbose_name='추천 가중치', default=0, null=True, blank=True, help_text='숫자가 높을수록 추천 순위가 높습니다. 기본 추천 가중치는 0입니다.')
+    recommend_number = models.FloatField(verbose_name='애정 온도', default=36.5, null=True, blank=True, help_text='숫자가 높을수록 추천 순위가 높습니다. 기본 추천 가중치는 36.5입니다.')
 
     class Meta:
         verbose_name = '병원'
         verbose_name_plural = verbose_name
+
+    def __str__(self):
+        return self.name
 
 
 class HospitalPrice(models.Model):
@@ -49,6 +58,9 @@ class HospitalPrice(models.Model):
         verbose_name = '진료비'
         verbose_name_plural = verbose_name
 
+    def __str__(self):
+        return self.name
+
 
 class HospitalImage(models.Model):
     hospital = models.ForeignKey(Hospital, verbose_name='병원', on_delete=models.CASCADE)
@@ -57,3 +69,6 @@ class HospitalImage(models.Model):
     class Meta:
         verbose_name = '병원 이미지'
         verbose_name_plural = verbose_name
+
+    def __str__(self):
+        return self.hospital.name + '의 이미지'

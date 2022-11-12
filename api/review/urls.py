@@ -5,6 +5,7 @@ review = HospitalReviewSet.as_view({
     'get': 'list',
     'post': 'create'
 })
+
 review_detail = HospitalReviewSet.as_view({
     'get': 'retrieve',
     'patch': 'update',
@@ -12,6 +13,6 @@ review_detail = HospitalReviewSet.as_view({
 })
 
 urlpatterns = [
-    path('', review, name='review'),
-    path('<int:pk>/', review_detail, name='review_detail'),
+    path('<int:pk>/', review, name='review'),
+    path('detail/<int:pk>/', review_detail, name='review_detail'),
 ]

@@ -4,7 +4,7 @@ from django.urls import path
 
 urlpatterns = [
     path('create/', create_animal),
-    path('update/<int:pk>/', AnimalRetreiveUpdateView.as_view()),
-    path('get/<int:pk>/', AnimalRetreiveUpdateView.as_view()),
+    path('<int:pk>/', AnimalRetreiveUpdateView.as_view()),
+    path('<int:pk>/', AnimalRetreiveUpdateView.as_view()),
     path('list/', AnimalListView.as_view()),
 ]

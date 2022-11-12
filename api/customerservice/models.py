@@ -3,6 +3,21 @@ from api.user.models import User
 from api.review.models import HospitalReview
 
 
+class Notification(models.Model):
+    sort = models.CharField(max_length=32, verbose_name='종류', default='공지')
+    user = models.ForeignKey(User, verbose_name='유저', null=True, blank=True, on_delete=models.CASCADE)
+    name = models.CharField(max_length=1024, verbose_name='알림 제목')
+    content = models.TextField(verbose_name='알림 내용')
+    created_at = models.DateField(auto_now_add=True, verbose_name='생성 시간')
+
+    class Meta:
+        verbose_name = '알림'
+        verbose_name_plural = verbose_name
+
+    def __str__(self):
+        return self.name
+
+
 class Notice(models.Model):
     name = models.CharField(max_length=1024, verbose_name='공지사항 제목')
     content = models.TextField(verbose_name='공지사항 내용')
@@ -12,6 +27,9 @@ class Notice(models.Model):
         verbose_name = '공지사항'
         verbose_name_plural = verbose_name
 
+    def __str__(self):
+        return self.name
+
 
 class FAQMenu(models.Model):
     name = models.CharField(max_length=128, verbose_name='FAQ 카테고리')
@@ -19,6 +37,9 @@ class FAQMenu(models.Model):
     class Meta:
         verbose_name = 'FAQ 카테고리'
         verbose_name_plural = verbose_name
+
+    def __str__(self):
+        return self.name
 
 
 class FAQ(models.Model):
@@ -31,6 +52,9 @@ class FAQ(models.Model):
     class Meta:
         verbose_name = '자주 묻는 질문'
         verbose_name_plural = verbose_name
+
+    def __str__(self):
+        return self.name
 
 
 class Offer(models.Model):
@@ -52,6 +76,9 @@ class Offer(models.Model):
     class Meta:
         verbose_name = '제휴 및 광고 문의'
         verbose_name_plural = verbose_name
+
+    def __str__(self):
+        return self.hospital_name + '의 문의사항'
 
 
 class HospitalReviewReport(models.Model):

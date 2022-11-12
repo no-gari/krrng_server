@@ -12,6 +12,7 @@ class Animal(models.Model):
     hospital_address = models.CharField(max_length=1024, verbose_name='내원 병원 주소')
     hospital_address_detail = models.CharField(max_length=1024, verbose_name='내원 병원 상세주소', null=True, blank=True)
     interested_disease = models.CharField(max_length=128, verbose_name='관심 질병')
+    image = models.ImageField(null=True, blank=True, verbose_name='반려동물 이미지')
 
     class NeuterChoices(models.TextChoices):
         IS_NETURED = 'IS', _('유')
@@ -46,3 +47,6 @@ class Animal(models.Model):
     class Meta:
         verbose_name = '반려동물 정보'
         verbose_name_plural = verbose_name
+
+    def __str__(self):
+        return self.user.profile_set.last().nickname + '의 반려동물'

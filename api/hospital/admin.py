@@ -21,13 +21,3 @@ class BestPartAdmin(admin.ModelAdmin):
 @admin.register(AvailableAnimal)
 class AvailableAnimalAdmin(admin.ModelAdmin):
     pass
-
-
-@admin.register(Symptom)
-class SymptomsAdmin(admin.ModelAdmin):
-    pass
-
-
-@admin.register(Disease)
-class DiseaseAdmin(admin.ModelAdmin):
-    pass

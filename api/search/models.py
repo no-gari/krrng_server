@@ -10,6 +10,9 @@ class RecentSearch(models.Model):
         verbose_name = '최근 검색어'
         verbose_name_plural = verbose_name
 
+    def __str__(self):
+        return self.keyword
+
 
 class TrendingSearch(models.Model):
     keyword = models.CharField(max_length=512, verbose_name='검색어')
@@ -18,3 +21,6 @@ class TrendingSearch(models.Model):
     class Meta:
         verbose_name = '인기 검색어'
         verbose_name_plural = verbose_name
+
+    def __str__(self):
+        return self.keyword

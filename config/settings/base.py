@@ -28,6 +28,7 @@ DJANGO_APPS = [
 
 LOCAL_APPS = [
     'api.user.apps.UserConfig',
+    'api.point.apps.PointConfig',
     'api.logger.apps.LoggerConfig',
     'api.search.apps.SearchConfig',
     'api.animal.apps.AnimalConfig',

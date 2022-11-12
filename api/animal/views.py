@@ -1,4 +1,4 @@
-from rest_framework.generics import ListAPIView, RetrieveUpdateAPIView
+from rest_framework.generics import ListAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.exceptions import ValidationError
 from api.animal.serializers import AnimalSerializer
 from rest_framework.decorators import api_view
@@ -21,10 +21,10 @@ class AnimalListView(ListAPIView):
         return super().list(request, **kwargs)
 
 
-class AnimalRetreiveUpdateView(RetrieveUpdateAPIView):
+class AnimalRetreiveUpdateView(RetrieveUpdateDestroyAPIView):
     queryset = Animal.objects.all()
     serializer_class = AnimalSerializer
-    allowed_methods = ['GET', 'PUT']
+    allowed_methods = ['GET', 'PUT', 'DELETE']
     lookup_field = 'pk'
     model = Animal
 
@@ -57,6 +57,7 @@ def create_animal(request, *args, **kwargs):
             neuter_choices=serializer_data.get('neuter_choices'),
             has_alergy=serializer_data.get('has_alergy'),
             sex_choices=serializer_data.get('sex_choices'),
+            image=request.FILES.get('image')
         )
         new_animal.save()
         return Response(AnimalSerializer(new_animal).data, status=status.HTTP_200_OK)

@@ -70,7 +70,6 @@ class Profile(models.Model):
     profile_image = models.ImageField(upload_to=directory_path, verbose_name='프로필 사진', null=True, blank=True)
     birthday = models.DateField(verbose_name='생일', null=True, blank=True)
     code = models.CharField(max_length=1024, verbose_name=_('SNS 고유 코드'), null=True, blank=True)
-    points = models.PositiveIntegerField(default=0, verbose_name=_('포인트'))
 
     class SexChoices(models.TextChoices):
         MALE = 'MA', _('남자')
