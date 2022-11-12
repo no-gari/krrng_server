@@ -1,3 +1,4 @@
+from api.disease.models import Disease
 from api.user.models import User
 from django.db import models
 
