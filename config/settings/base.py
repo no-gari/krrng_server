@@ -32,6 +32,7 @@ LOCAL_APPS = [
     'api.search.apps.SearchConfig',
     'api.animal.apps.AnimalConfig',
     'api.review.apps.ReviewConfig',
+    'api.disease.apps.DiseaseConfig',
     'api.hospital.apps.HospitalConfig',
     'api.customerservice.apps.CustomerserviceConfig',
 ]
