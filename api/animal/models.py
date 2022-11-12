@@ -9,9 +9,9 @@ class Animal(models.Model):
     birthday = models.DateField(verbose_name='생일', null=True, blank=True)
     weight = models.CharField(max_length=10, verbose_name='몸무게')
     kind = models.CharField(max_length=32, verbose_name='품종')
-    hospital = models.TextField(verbose_name='내원 병원')
-    interested_disease = models.CharField(max_length=128 ,verbose_name='관심 질병')
-    has_alergy = models.CharField(max_length=1024 ,verbose_name='알러지 유무')
+    hospital_address = models.CharField(max_length=1024, verbose_name='내원 병원 주소')
+    hospital_address_detail = models.CharField(max_length=1024, verbose_name='내원 병원 상세주소', null=True, blank=True)
+    interested_disease = models.CharField(max_length=128, verbose_name='관심 질병')
 
     class NeuterChoices(models.TextChoices):
         IS_NETURED = 'IS', _('유')
@@ -23,6 +23,13 @@ class Animal(models.Model):
         choices=NeuterChoices.choices,
         default=NeuterChoices.IS_NETURED,
         verbose_name='중성화 여부'
+    )
+
+    has_alergy = models.CharField(
+        max_length=2,
+        choices=NeuterChoices.choices,
+        default=NeuterChoices.IS_NETURED,
+        verbose_name='알러지 유무 여부'
     )
 
     class SexChoices(models.TextChoices):

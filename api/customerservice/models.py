@@ -3,8 +3,27 @@ from api.user.models import User
 from api.hospital.models import HospitalReview
 
 
+class Notice(models.Model):
+    name = models.CharField(max_length=1024, verbose_name='공지사항 제목')
+    content = models.TextField(verbose_name='공지사항 내용')
+    created_at = models.DateField(auto_now_add=True, verbose_name='생성 시간')
+
+    class Meta:
+        verbose_name = '공지사항'
+        verbose_name_plural = verbose_name
+
+
+class FAQMenu(models.Model):
+    name = models.CharField(max_length=128, verbose_name='FAQ 카테고리')
+
+    class Meta:
+        verbose_name = 'FAQ 카테고리'
+        verbose_name_plural = verbose_name
+
+
 class FAQ(models.Model):
-    title = models.CharField(max_length=128, verbose_name='제목')
+    faq_menu = models.ForeignKey(FAQMenu, verbose_name='FAQ 카테고리', on_delete=models.CASCADE, null=True, blank=True)
+    name = models.CharField(max_length=128, verbose_name='제목')
     content = models.TextField(verbose_name='내용')
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)

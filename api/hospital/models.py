@@ -38,7 +38,7 @@ class Symptoms(models.Model):
 class Hospital(models.Model):
     name = models.CharField(max_length=64, verbose_name='병원명')
     number = models.CharField(max_length=64, verbose_name='연락처')
-    intro = models.TextField(max_length=64, verbose_name='소개글')
+    intro = models.TextField(verbose_name='소개글')
     available_time = models.CharField(max_length=512, verbose_name='영업 시간')
     rest_date = models.CharField(max_length=512, verbose_name='휴무일')
     available_animal = models.ManyToManyField(AvailableAnimal, verbose_name='진료 가능 동물')
