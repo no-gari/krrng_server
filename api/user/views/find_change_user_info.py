@@ -85,6 +85,7 @@ class ProfileView(RetrieveUpdateAPIView):
     serializer_class = ProfileSerializer
     permission_classes = [IsAuthenticated]
     queryset = Profile.objects.all()
+    allowed_methods = ['GET', 'PUT']
 
     def get_object(self):
         return Profile.objects.get(user=self.request.user)

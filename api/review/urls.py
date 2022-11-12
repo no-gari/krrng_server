@@ -7,9 +7,8 @@ review = HospitalReviewSet.as_view({
 })
 review_detail = HospitalReviewSet.as_view({
     'get': 'retrieve',
-    'put': 'update',
-    'patch': 'partial_update',
-    'delete': 'destroy'
+    'patch': 'update',
+    'delete': 'delete'
 })
 
 urlpatterns = [

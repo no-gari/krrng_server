@@ -6,7 +6,7 @@ recent_search = RecentSearchViewSet.as_view({
     'post': 'create'
 })
 recent_search_detail = RecentSearchViewSet.as_view({
-    'delete': 'destroy'
+    'delete': 'delete'
 })
 
 urlpatterns = [
