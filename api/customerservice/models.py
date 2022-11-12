@@ -1,6 +1,6 @@
 from django.db import models
 from api.user.models import User
-from api.hospital.models import HospitalReview
+from api.review.models import HospitalReview
 
 
 class Notice(models.Model):
