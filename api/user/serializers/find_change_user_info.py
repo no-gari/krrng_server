@@ -109,7 +109,7 @@ class FindPasswordChangePasswordSerializer(serializers.Serializer):
 class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile
-        fields = ['nickname', 'profile_image', 'points', 'birthday', 'sex_choices']
+        fields = ['nickname', 'profile_image', 'birthday', 'sex_choices']
 
 
 # 그냥 마이페이지에서 비밀번호 변경

@@ -1,3 +1,5 @@
+from django.shortcuts import render
+from rest_framework.decorators import api_view
 from rest_framework.generics import CreateAPIView, RetrieveUpdateAPIView, UpdateAPIView, GenericAPIView
 from rest_framework import serializers, status
 from rest_framework.response import Response
@@ -89,6 +91,16 @@ class ProfileView(RetrieveUpdateAPIView):
 
     def get_object(self):
         return Profile.objects.get(user=self.request.user)
+
+
+@api_view(['GET'])
+def get_anonymous_user(request):
+    return Response({
+        'nickname': '',
+        'profile_image': '',
+        'birthday': '',
+        'sex_choices': ''
+    }, status=status.HTTP_200_OK)
 
 
 # 비밀번호 변경
