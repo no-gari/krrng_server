@@ -5,6 +5,7 @@ from django.db import models
 
 class BestPart(models.Model):
     name = models.CharField(max_length=64, verbose_name='특화 분야')
+    image = models.FileField(verbose_name='아이콘', null=True, blank=True)
 
     class Meta:
         verbose_name = '특화 분야'
@@ -52,7 +53,7 @@ class HospitalPrice(models.Model):
     disease = models.ForeignKey(Disease, verbose_name='질병', on_delete=models.CASCADE, null=True, blank=True)
     hospital = models.ForeignKey(Hospital, verbose_name='병원 명', on_delete=models.CASCADE, null=True, blank=True)
     name = models.CharField(max_length=128, verbose_name='진료 항목')
-    price = models.CharField(max_length=128, verbose_name='가격')
+    price = models.IntegerField(max_length=128, verbose_name='가격')
 
     class Meta:
         verbose_name = '진료비'

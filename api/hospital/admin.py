@@ -10,6 +10,7 @@ class HospitalImageAdmin(admin.StackedInline):
 
 @admin.register(Hospital)
 class HospitalAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name', )
     readonly_fields = ('latitude', 'longitude',)
     inlines = (HospitalImageAdmin, )
 
