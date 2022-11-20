@@ -49,8 +49,8 @@ class Hospital(models.Model):
 
 
 class HospitalPrice(models.Model):
-    models.ForeignKey(Disease, verbose_name='질병', on_delete=models.CASCADE)
-    models.ForeignKey(Hospital, verbose_name='병원 명', on_delete=models.CASCADE)
+    disease = models.ForeignKey(Disease, verbose_name='질병', on_delete=models.CASCADE, null=True, blank=True)
+    hospital = models.ForeignKey(Hospital, verbose_name='병원 명', on_delete=models.CASCADE, null=True, blank=True)
     name = models.CharField(max_length=128, verbose_name='진료 항목')
     price = models.CharField(max_length=128, verbose_name='가격')
 
