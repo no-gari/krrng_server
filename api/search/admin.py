@@ -7,6 +7,6 @@ class TrendingSearchAdmin(admin.ModelAdmin):
     pass
 
 
-@admin.register(RecentSearch)
-class DiseaseAdmin(admin.ModelAdmin):
-    pass
+# @admin.register(RecentSearch)
+# class DiseaseAdmin(admin.ModelAdmin):
+#     pass

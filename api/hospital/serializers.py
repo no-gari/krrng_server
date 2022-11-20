@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import BestPart, AvailableAnimal, HospitalPrice, Hospital, HospitalImage
+from .models import BestPart, AvailableAnimal, Hospital
 
 
 class BestPartSerializer(serializers.ModelSerializer):
@@ -25,7 +25,3 @@ class HospitalSearchSerializer(serializers.ModelSerializer):
     class Meta:
         model = Hospital
         fields = ('name', 'address', 'recommend_number', )
-
-
-# class HospitalSerializer(serializers.ModelSerializer):
-#     class Meta:
