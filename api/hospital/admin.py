@@ -1,6 +1,5 @@
 from django.contrib import admin
 from .models import Hospital, HospitalPrice, BestPart, AvailableAnimal, HospitalImage
-from api.disease.models import Disease
 from django.conf import settings
 import requests
 
@@ -32,8 +31,8 @@ class HospitalAdmin(admin.ModelAdmin):
             if res.status_code != 200:
                 raise Exception()
             res_json = res.json()
-            latitude = res_json['addresses'][0]['x']
-            longitude = res_json['addresses'][0]['y']
+            latitude = res_json['addresses'][0]['y']
+            longitude = res_json['addresses'][0]['x']
 
             obj.latitude = latitude
             obj.longitude = longitude
@@ -42,23 +41,15 @@ class HospitalAdmin(admin.ModelAdmin):
             pass
         obj.save()
 
-#
-# class InlineHospitalAdmin(admin.TabularInline):
-#     model = Hospital
-#
-#
-# class InlineDiseaseAdmin(admin.TabularInline):
-#     model = Disease
-
 
 @admin.register(HospitalPrice)
 class HospitalPriceAdmin(admin.ModelAdmin):
-    # inlines = (InlineDiseaseAdmin, InlineHospitalAdmin, 'name', 'price')
     pass
 
-@admin.register(BestPart)
-class BestPartAdmin(admin.ModelAdmin):
-    pass
+
+# @admin.register(BestPart)
+# class BestPartAdmin(admin.ModelAdmin):
+#     pass
 
 
 @admin.register(AvailableAnimal)

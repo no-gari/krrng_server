@@ -15,6 +15,9 @@ class HospitalReview(models.Model):
         verbose_name = '병원 리뷰'
         verbose_name_plural = verbose_name
 
+    def __str__(self):
+        return self.user.profile_set.last().nickname + '의 ' + self.hospital.name + ' 리뷰'
+
 
 class HospitalRecieptImage(models.Model):
     hospital_review = models.ForeignKey(HospitalReview, verbose_name='리뷰', on_delete=models.CASCADE)
