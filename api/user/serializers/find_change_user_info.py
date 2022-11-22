@@ -1,11 +1,11 @@
 import random
 from django.db import transaction
 from rest_framework import serializers
-
 from api.logger.models import PhoneLog
 from api.user.validators import validate_password
-from django.contrib.auth.hashers import make_password
+from api.animal.serializers import AnimalSerializer
 from rest_framework.exceptions import ValidationError
+from django.contrib.auth.hashers import make_password
 from api.user.models import User, Profile, PhoneVerifier
 from django.core.exceptions import ValidationError as DjangoValidationError
 
@@ -110,6 +110,18 @@ class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile
         fields = ['nickname', 'profile_image', 'birthday', 'sex_choices']
+
+
+class ProfileRetrieveSerializer(serializers.ModelSerializer):
+    animal = serializers.SerializerMethodField(read_only=True)
+
+    class Meta:
+        model = Profile
+        fields = ['nickname', 'profile_image', 'birthday', 'sex_choices', 'animal']
+
+    def get_animal(self, obj):
+        animals = obj.user.animal_set.all()
+        return AnimalSerializer(animals, many=True).data
 
 
 # 그냥 마이페이지에서 비밀번호 변경

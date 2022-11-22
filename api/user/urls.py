@@ -27,8 +27,9 @@ urlpatterns = [
     path('findpw-change/', FindPasswordChangePasswordView.as_view()),
 
     # 프로필 가져오기
-    path('profile/', ProfileView.as_view()),
-    path('profile/anonymous', get_anonymous_user),
+    path('profile/', ProfileRetrieveAPIView.as_view()),
+    path('profile/', ProfileUpdateAPIView.as_view()),
+    # path('profile/anonymous', get_anonymous_user),
     # path('profile/', ProfileUpdateView.as_view()),
 
     # 비밀번호 변경

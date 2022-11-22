@@ -1,10 +1,9 @@
-from django.shortcuts import render
-from rest_framework.decorators import api_view
-from rest_framework.generics import CreateAPIView, RetrieveUpdateAPIView, UpdateAPIView, GenericAPIView
-from rest_framework import serializers, status
 from rest_framework.response import Response
-from api.user.serializers.find_change_user_info import *
+from rest_framework import serializers, status
+from rest_framework.decorators import api_view
 from rest_framework.permissions import IsAuthenticated
+from api.user.serializers.find_change_user_info import *
+from rest_framework.generics import CreateAPIView, RetrieveUpdateAPIView, UpdateAPIView, RetrieveAPIView
 
 
 # 아이디 찾기 번호 인증
@@ -82,8 +81,21 @@ class FindPasswordChangePasswordView(CreateAPIView):
             return Response(status=status.HTTP_200_OK)
 
 
+# 프로필 가져오기
+class ProfileRetrieveAPIView(RetrieveAPIView):
+    serializer_class = ProfileRetrieveSerializer
+    permission_classes = [IsAuthenticated]
+    allowed_methods = ['GET']
+
+    def get_queryset(self):
+        return Profile.objects.all().prefetch_related('animal_set')
+
+    def get_object(self):
+        return Profile.objects.get(user=self.request.user)
+
+
 # 닉네임, 생년월일, 성별, 프로필 사진 변경 및 가져오기
-class ProfileView(RetrieveUpdateAPIView):
+class ProfileUpdateAPIView(UpdateAPIView):
     serializer_class = ProfileSerializer
     permission_classes = [IsAuthenticated]
     queryset = Profile.objects.all()
