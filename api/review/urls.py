@@ -1,18 +1,8 @@
-from api.review.views import HospitalReviewSet
+from api.review.views import HospitalReviewSet, HospitalReviewListView, MyReviewListView, HospitalReviewCreateView
 from django.urls import path
 
-review = HospitalReviewSet.as_view({
-    'get': 'list',
-    'post': 'create'
-})
-
-review_detail = HospitalReviewSet.as_view({
-    'get': 'retrieve',
-    'patch': 'update',
-    'delete': 'delete'
-})
-
 urlpatterns = [
-    path('<int:pk>/', review, name='review'),
-    path('detail/<int:pk>/', review_detail, name='review_detail'),
+    path('list/', HospitalReviewListView.as_view(), name='hospital_review_list'),
+    path('my-list/', MyReviewListView.as_view(), name='my_hospital_review_list'),
+    path('create/', HospitalReviewCreateView.as_view(), name='hospital_review_create'),
 ]

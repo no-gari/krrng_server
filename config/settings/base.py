@@ -131,6 +131,9 @@ MEDIA_ROOT = BASE_DIR / 'media'
 # DJANGO BASE USER MODEL
 SITE_ID = 1
 
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
+FORCE_SCRIPT_NAME = '/'
+
 # AUTH_USER_MODEL
 AUTH_USER_MODEL = 'user.User'
 

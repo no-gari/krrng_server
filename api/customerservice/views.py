@@ -1,8 +1,8 @@
 from .serializers import FAQSerializer, OfferSerializer, HospitalReviewReportSerializer, \
     NotificationSerializer, NoticeSerializer, FAQMenuSerializer
-from rest_framework.generics import CreateAPIView, ListAPIView, DestroyAPIView, RetrieveAPIView
 from .models import FAQ, Offer, HospitalReviewReport, Notification, Notice, FAQMenu
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.generics import CreateAPIView, ListAPIView, DestroyAPIView
+from rest_framework.permissions import IsAuthenticated
 
 
 class NotificationAPIView(ListAPIView):

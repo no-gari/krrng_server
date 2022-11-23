@@ -34,6 +34,10 @@ if DB == 'mysql':
             'PASSWORD': 'krrngrds',
             'HOST': 'krrngrds.ci0gyj4wz5ig.ap-northeast-2.rds.amazonaws.com',
             'PORT': '3306',
+            'OPTIONS': {
+                'charset': 'utf8mb4',
+                'use_unicode': True,
+            }
         }
     }
 

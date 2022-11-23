@@ -1,13 +1,12 @@
-from rest_framework.permissions import IsAuthenticated, AllowAny
-from rest_framework.exceptions import ValidationError
-from collections import OrderedDict
-from rest_framework.generics import ListAPIView, CreateAPIView, RetrieveUpdateDestroyAPIView, RetrieveAPIView
-from rest_framework.decorators import api_view
-from .serializers import HospitalListSerializer, BestPartSerializer, AvailableAnimalSerializer, HospitalDetailSerializer
-from rest_framework import status
-import json
-from .models import Hospital, HospitalPrice, HospitalImage
+from .serializers import HospitalListSerializer, HospitalDetailSerializer
+from rest_framework.generics import ListAPIView, RetrieveAPIView
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
+from api.review.models import HospitalReview
+from django.db.models import Prefetch
+from rest_framework import status
+from .models import Hospital
+import json
 
 
 class HospitalListView(ListAPIView):
@@ -18,25 +17,24 @@ class HospitalListView(ListAPIView):
         disease = self.request.query_params.get('disease')
         best_part = self.request.query_params.get('bestPart')
         if best_part == '0' and disease == '0':
-            hospital_list = Hospital.objects.filter(
-                is_visible=True).prefetch_related("hospitalprice_set").prefetch_related("best_part")
+            hospital_list = Hospital.objects.filter(s_visible=True).prefetch_related('hospitalprice_set', 'best_part')
         else:
             if best_part == 0:
                 hospital_list = Hospital.objects.filter(
                     hospitalprice__disease__in=[int(disease)],
                     is_visible=True
-                ).prefetch_related("hospitalprice_set").prefetch_related("best_part")
+                ).prefetch_related("hospitalprice_set", 'best_part')
             elif disease == 0:
                 hospital_list = Hospital.objects.filter(
                     best_part__in=[int(best_part)],
                     is_visible=True
-                ).prefetch_related("hospitalprice_set").prefetch_related("best_part")
+                ).prefetch_related("hospitalprice_set", 'best_part')
             else:
                 hospital_list = Hospital.objects.filter(
                     best_part__in=[int(best_part)],
                     hospitalprice__disease__in=[int(disease)],
                     is_visible=True
-                ).prefetch_related("hospitalprice_set").prefetch_related("best_part")
+                ).prefetch_related("hospitalprice_set", 'best_part')
         return hospital_list
 
     def list(self, request, *args, **kwargs):
@@ -79,3 +77,13 @@ class HospitalDetailView(RetrieveAPIView):
 
     def get_object(self):
         return Hospital.objects.get(id=self.kwargs['pk'])
+
+    def get_queryset(self):
+        return Hospital.objects.all().prefetch_related(
+            'hospitalimage_set', 'hospitalreview_set', 'hospitalprice_set'
+        ).prefetch_related(
+            Prefetch('hospitalreview_set', queryset=HospitalReview.objects.prefetch_related(
+                'like_users', 'hospitalreviewimage_set', 'hospitalrecieptimage_set'
+            )
+        )
+    )

@@ -1,4 +1,5 @@
 from rest_framework.generics import ListAPIView, RetrieveUpdateDestroyAPIView
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import ValidationError
 from api.animal.serializers import AnimalSerializer
 from rest_framework.decorators import api_view
@@ -10,6 +11,7 @@ from rest_framework import status
 class AnimalListView(ListAPIView):
     model = Animal
     serializer_class = AnimalSerializer
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         user_animal = Animal.objects.filter(user=self.request.user)

@@ -2,6 +2,7 @@ import geopy.distance
 from django.db.models import Avg, Min
 from rest_framework import serializers
 from .models import BestPart, AvailableAnimal, Hospital, HospitalPrice, HospitalImage
+from ..review.serializers import HospitalReviewSerializer
 
 
 class BestPartSerializer(serializers.ModelSerializer):
@@ -78,6 +79,7 @@ class HospitalDetailSerializer(serializers.ModelSerializer):
     price_list = serializers.SerializerMethodField(read_only=True)
     available_animal = AvailableAnimalSerializer(read_only=True, many=True)
     best_part = BestPartSerializer(read_only=True, many=True)
+    hospital_review = HospitalReviewSerializer(read_only=True, many=True, source='hospital_reviews')
 
     class Meta:
         model = Hospital
@@ -92,7 +94,7 @@ class HospitalDetailSerializer(serializers.ModelSerializer):
         return int(distance)
 
     def get_review_count(self, obj):
-        reviews = obj.hospitalreview_set.count()
+        reviews = obj.hospital_reviews.count()
         return reviews
 
     def get_images(self, obj):
@@ -100,10 +102,10 @@ class HospitalDetailSerializer(serializers.ModelSerializer):
         return HospitalImageSerializer(images, many=True).data
 
     def get_rate(self, obj):
-        if obj.hospitalreview_set.count() == 0:
+        if obj.hospital_reviews.count() == 0:
             return 0
         else:
-            review_average = obj.hospitalreview_set.aggregate(Avg('rates'))
+            review_average = obj.hospital_reviews.aggregate(Avg('rates'))
             return review_average['rates__avg']
 
     def get_price_list(self, obj):

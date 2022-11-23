@@ -5,11 +5,12 @@ from django.db import models
 
 class HospitalReview(models.Model):
     user = models.ForeignKey(User, verbose_name='유저', on_delete=models.CASCADE)
-    hospital = models.ForeignKey(Hospital, verbose_name='병원', on_delete=models.CASCADE)
+    hospital = models.ForeignKey(Hospital, verbose_name='병원', on_delete=models.CASCADE, related_name='hospital_reviews')
     diagnosis = models.CharField(max_length=128, verbose_name='진료 항목')
-    review = models.TextField(verbose_name='리뷰 내용')
-    like_users = models.ManyToManyField(User, related_name='like_users', null=True, blank=True, verbose_name='좋아요한 사람들')
-    rates = models.FloatField(verbose_name='리뷰 별점', default=5)
+    content = models.TextField(verbose_name='리뷰 내용')
+    like_users = models.ManyToManyField(User, related_name='like_users', blank=True, verbose_name='좋아요한 사람들')
+    rates = models.IntegerField(verbose_name='리뷰 별점', default=5)
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='생성 시간')
 
     class Meta:
         verbose_name = '병원 리뷰'

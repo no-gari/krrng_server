@@ -8,9 +8,10 @@ schema_view = get_schema_view(
     openapi.Info(
         title=f'{settings.SITE_NAME} API',
         default_version='v1',
-        description="Test description",
+        description="krrng api v1",
     ),
     public=False,
+    url='http://localhost:8000'
 )
 
 

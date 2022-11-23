@@ -1,13 +1,40 @@
 from rest_framework.permissions import IsAuthenticated, AllowAny
-from .serializers import HospitalReviewSerializer
+from .serializers import HospitalReviewSerializer, HospitalReviewCreateSerializer
 from rest_framework.response import Response
 from rest_framework import viewsets
+from rest_framework.generics import ListAPIView, CreateAPIView
 from .models import HospitalReview
+
+
+class HospitalReviewListView(ListAPIView):
+    serializer_class = HospitalReviewSerializer
+
+    def get_queryset(self):
+        HospitalReview.objects.all()
+        hospital_id = int(self.request.query_params.get('hospital'))
+        return HospitalReview.objects.prefetch_related(
+            'like_users__profile_set', 'hospitalreviewimage_set'
+        ).select_related('hospital').filter(hospital_id=hospital_id)
+
+
+class HospitalReviewCreateView(CreateAPIView):
+    serializer_class = HospitalReviewCreateSerializer
+    queryset = HospitalReview.objects.all()
+    permission_classes = [IsAuthenticated]
+
+
+class MyReviewListView(ListAPIView):
+    serializer_class = HospitalReviewSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return HospitalReview.objects.prefetch_related(
+            'like_users__profile_set', 'hospitalreviewimage_set'
+        ).filter(user=self.request.user)
 
 
 class HospitalReviewSet(viewsets.ModelViewSet):
     serializer_class = HospitalReviewSerializer
-    queryset = HospitalReview.objects.all()
     lookup_field = 'pk'
 
     def get_permissions(self):
@@ -15,6 +42,9 @@ class HospitalReviewSet(viewsets.ModelViewSet):
         if self.action == 'create' or 'update' or 'partial_update' or 'destroy':
             permission_classes = [IsAuthenticated]
         return [permission() for permission in permission_classes]
+
+    def get_queryset(self):
+        return HospitalReview.objects.prefetch_related('like_users')
 
     def list(self, request, *args, **kwargs):
         queryset = HospitalReview.objects.filter(hospital_id=self.kwargs['pk'])

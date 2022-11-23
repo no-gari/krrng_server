@@ -12,4 +12,4 @@ class HospitalRecieptImageAdmin(admin.StackedInline):
 
 @admin.register(HospitalReview)
 class HospitalPriceAdmin(admin.ModelAdmin):
-    inlines = (HospitalRecieptImageAdmin, HospitalRecieptImageAdmin,)
+    inlines = (HospitalReviewImageAdmin, HospitalRecieptImageAdmin, )
