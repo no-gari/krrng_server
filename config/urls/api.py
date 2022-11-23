@@ -11,7 +11,6 @@ schema_view = get_schema_view(
         description="krrng api v1",
     ),
     public=False,
-    url='http://localhost:8000'
 )
 
 
