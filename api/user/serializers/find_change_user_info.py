@@ -113,15 +113,15 @@ class ProfileSerializer(serializers.ModelSerializer):
 
 
 class ProfileRetrieveSerializer(serializers.ModelSerializer):
-    animal = serializers.SerializerMethodField(read_only=True)
+    animals = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = Profile
-        fields = ['nickname', 'profile_image', 'birthday', 'sex_choices', 'animal']
+        fields = ['nickname', 'profile_image', 'birthday', 'sex_choices', 'animals']
 
-    def get_animal(self, obj):
-        animals = obj.user.animal_set.all()
-        return AnimalSerializer(animals, many=True).data
+    def get_animals(self, obj):
+        user_animals = obj.user.animal_set.all()
+        return AnimalSerializer(user_animals, many=True).data
 
 
 # 그냥 마이페이지에서 비밀번호 변경
