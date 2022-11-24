@@ -5,6 +5,7 @@ from django.db import models
 
 class Animal(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='유저')
+    name = models.CharField(max_length=64, verbose_name='이름')
     sort = models.CharField(max_length=32, verbose_name='종류')
     birthday = models.DateField(verbose_name='생일', null=True, blank=True)
     weight = models.CharField(max_length=10, verbose_name='몸무게')
