@@ -26,7 +26,10 @@ class PointLogListView(ListAPIView):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return PointLog.objects.filter(user=self.request.user)
+        order = self.request.query_params.get('order')
+        if order == 'old':
+            return PointLog.objects.filter(user=self.request.user).order_by('-created_at')
+        return PointLog.objects.filter(user=self.request.user).order_by('created_at')
 
     def list(self, request, *args, **kwargs):
         new_json = {}
