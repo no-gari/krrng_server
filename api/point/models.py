@@ -14,4 +14,4 @@ class PointLog(models.Model):
         verbose_name_plural = verbose_name
 
     def __str__(self):
-        return self.user.profile_set.last() + '의 포인트 로그'
+        return self.user.profile_set.last().nickname + '의 포인트 로그'

@@ -7,6 +7,7 @@ from .serializers import PointSerializer
 from rest_framework import status
 from django.db.models import Sum
 from .models import PointLog
+import json
 
 
 @api_view(['GET'])
@@ -26,3 +27,16 @@ class PointLogListView(ListAPIView):
 
     def get_queryset(self):
         return PointLog.objects.filter(user=self.request.user)
+
+    def list(self, request, *args, **kwargs):
+        new_json = {}
+        data = super().list(request, *args, **kwargs).data
+        json_str = json.dumps(data)
+        json_object = json.loads(json_str)
+        user = self.request.user
+        total_point = PointLog.objects.filter(user=user).aggregate(Sum('amount'))['amount__sum']
+        if total_point is None:
+            total_point = 0
+        new_json['total_point'] = total_point
+        new_json['points'] = json_object
+        return Response(new_json, status=status.HTTP_200_OK)
