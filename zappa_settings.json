@@ -5,6 +5,11 @@
         "project_name": "banhae-server",
         "runtime": "python3.8",
         "s3_bucket": "zappa-no6fauceb",
-        "aws_region": "ap-northeast-2"
+        "aws_region": "ap-northeast-2",
+        "slim_handler": true,
+        "memory_size": 1024,
+        "keep_warm": true,
+        "keep_warm_expression": "rate(4 minutes)",
+        "Effect": "Allow"
     }
 }
