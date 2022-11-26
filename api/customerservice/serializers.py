@@ -1,4 +1,4 @@
-from api.customerservice.models import FAQ, Offer, HospitalReviewReport,\
+from api.customerservice.models import FAQ, Offer, HospitalReviewReport, \
     HospitalReviewReportImage, Notification, Notice, FAQMenu
 from rest_framework import serializers
 
