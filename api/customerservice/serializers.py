@@ -40,9 +40,14 @@ class FAQMenuSerializer(serializers.ModelSerializer):
 
 
 class FAQSerializer(serializers.ModelSerializer):
+    is_expanded = serializers.SerializerMethodField(read_only=True)
+
     class Meta:
         model = FAQ
-        fields = ('name', 'content', 'id', )
+        fields = ('name', 'content', 'id', 'is_expanded', )
+
+    def get_is_expanded(self, obj):
+        return False
 
 
 class OfferSerializer(serializers.ModelSerializer):
