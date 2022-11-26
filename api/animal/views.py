@@ -1,4 +1,4 @@
-from rest_framework.generics import ListAPIView, RetrieveUpdateDestroyAPIView
+from rest_framework.generics import ListAPIView, RetrieveUpdateDestroyAPIView, CreateAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import ValidationError
 from api.animal.serializers import AnimalSerializer
@@ -41,30 +41,10 @@ class AnimalRetreiveUpdateView(RetrieveUpdateDestroyAPIView):
         return super().patch(request, *args, **kwargs)
 
 
-@api_view(["POST"])
-def create_animal(request, *args, **kwargs):
-    if not request.user.is_authenticated:
-        return Response({'error_msg': '로그인 후 이용해주세요,'}, status=status.HTTP_400_BAD_REQUEST)
-    try:
-        serializer_data = AnimalSerializer(request.data).data
-        new_animal = Animal.objects.create(
-            user=request.user,
-            sort=serializer_data.get('sort'),
-            birthday=serializer_data.get('birthday'),
-            weight=serializer_data.get('weight'),
-            kind=serializer_data.get('kind'),
-            hospital_address=serializer_data.get('hospital_address'),
-            hospital_address_detail=serializer_data.get('hospital_address_detail'),
-            interested_disease=serializer_data.get('interested_disease'),
-            neuter_choices=serializer_data.get('neuter_choices'),
-            has_alergy=serializer_data.get('has_alergy'),
-            sex_choices=serializer_data.get('sex_choices'),
-            image=request.FILES.get('image')
-        )
-        new_animal.save()
-        return Response(AnimalSerializer(new_animal).data, status=status.HTTP_200_OK)
-    except:
-        return ValidationError({'error_msg': '다시 한 번 시도 해주세요.'})
+class AnimalCreateView(CreateAPIView):
+    queryset = Animal.objects.all()
+    serializer_class = AnimalSerializer
+    permission_classes = [IsAuthenticated]
 
 
 @api_view(["DELETE"])
