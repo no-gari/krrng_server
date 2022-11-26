@@ -4,33 +4,45 @@ from rest_framework import serializers
 
 
 class NoticeSerializer(serializers.ModelSerializer):
-    timesince = serializers.SerializerMethodField()
+    is_expanded = serializers.SerializerMethodField(read_only=True)
+    created_at = serializers.DateField(format="%Y-%m-%d", read_only=True)
 
     class Meta:
         model = Notice
-        fields = ('name', 'content', 'timesince')
+        fields = ('name', 'content', 'created_at', 'is_expanded', )
+
+    def get_is_expanded(self, obj):
+        return False
+
+
+class NotificationSerializer(serializers.ModelSerializer):
+    timesince = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Notification
+        fields = '__all__'
 
     def get_timesince(self, obj):
         from django.utils.timesince import timesince
         return timesince(obj.created_at)
 
 
-class NotificationSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Notification
-        fields = '__all__'
-
-
 class FAQMenuSerializer(serializers.ModelSerializer):
+    faq = serializers.SerializerMethodField(read_only=True)
+
     class Meta:
         model = FAQMenu
-        fields = ('name',)
+        fields = ('name', 'id', 'faq', )
+
+    def get_faq(self, obj):
+        faqs = obj.faq_set.all()
+        return FAQSerializer(faqs, many=True).data
 
 
 class FAQSerializer(serializers.ModelSerializer):
     class Meta:
         model = FAQ
-        fields = '__all__'
+        fields = ('name', 'content', 'id', )
 
 
 class OfferSerializer(serializers.ModelSerializer):
