@@ -1,10 +1,10 @@
 from rest_framework.generics import ListAPIView, RetrieveUpdateDestroyAPIView
-from rest_framework.permissions import IsAuthenticated
+from api.animal.serializers import AnimalSerializer, AnimalKindSerializer
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.exceptions import ValidationError
-from api.animal.serializers import AnimalSerializer
+from api.animal.models import Animal, AnimalKind
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from api.animal.models import Animal
 from rest_framework import status
 
 
@@ -21,6 +21,16 @@ class AnimalListView(ListAPIView):
         if not request.user.is_authenticated:
             return Response({'error_msg': '로그인 후 이용해주세요,'}, status=status.HTTP_400_BAD_REQUEST)
         return super().list(request, **kwargs)
+
+
+class AnimalKindListView(ListAPIView):
+    model = AnimalKind
+    serializer_class = AnimalKindSerializer
+    permission_classes = [AllowAny]
+
+    def get_queryset(self):
+        id = int(self.request.query_params.get('id'))
+        return AnimalKind.objects.prefetch_related('sort_animal').filter(sort_animal_id=id)
 
 
 class AnimalRetreiveUpdateView(RetrieveUpdateDestroyAPIView):
