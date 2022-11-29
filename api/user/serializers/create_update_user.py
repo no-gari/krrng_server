@@ -69,16 +69,20 @@ class UserRegisterSerializer(serializers.Serializer):
 
     @transaction.atomic
     def create(self, validated_data):
-        email = validated_data['user_id'] + '@krrng.com'
-        password = validated_data['password']
-        phone = validated_data['phone']
-        user, created = User.objects.get_or_create(email=email, password=make_password(password))
-        user.phone = phone
-        user.save()
+        user_id = validated_data['user_id']
+        if len(user_id.split('@')) == 2:
+            user = User.objects.get(email=user_id)
+            user.phone = validated_data['phone']
+            user.save()
+        else:
+            email = validated_data['user_id'] + '@krrng.com'
+            password = validated_data['password']
+            phone = validated_data['phone']
+            user, created = User.objects.get_or_create(email=email, password=make_password(password), phone=phone)
 
-        if created:
-            user_profile = Profile.objects.create(user=user, nickname=validated_data['user_id'])
-            user_profile.save()
+            if created:
+                user_profile = Profile.objects.create(user=user, nickname=validated_data['user_id'])
+                user_profile.save()
 
         refresh = RefreshToken.for_user(user)
         return {

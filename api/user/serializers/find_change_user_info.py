@@ -107,26 +107,29 @@ class FindPasswordChangePasswordSerializer(serializers.Serializer):
 
 # 닉네임, 생년월일, 성별, 프로필 사진 변경 및 가져오기
 class ProfileSerializer(serializers.ModelSerializer):
-    phone = serializers.SerializerMethodField(read_only=True)
-
     class Meta:
         model = Profile
-        fields = ['nickname', 'profile_image', 'birthday', 'sex_choices', 'phone']
-
-    def get_phone(self, obj):
-        return obj.user.phone
+        fields = ['nickname', 'profile_image', 'birthday', 'sex_choices']
 
 
 class ProfileRetrieveSerializer(serializers.ModelSerializer):
     animals = serializers.SerializerMethodField(read_only=True)
+    phone = serializers.SerializerMethodField(read_only=True)
+    email = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = Profile
-        fields = ['nickname', 'profile_image', 'birthday', 'sex_choices', 'animals']
+        fields = ['nickname', 'profile_image', 'birthday', 'sex_choices', 'animals', 'phone', 'email']
 
     def get_animals(self, obj):
         user_animals = obj.user.animal_set.all()
         return AnimalSerializer(user_animals, many=True).data
+
+    def get_phone(self, obj):
+        return obj.user.phone
+
+    def get_email(self, obj):
+        return obj.user.email
 
 
 # 그냥 마이페이지에서 비밀번호 변경
