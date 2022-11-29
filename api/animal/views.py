@@ -1,8 +1,8 @@
 from rest_framework.generics import ListAPIView, RetrieveUpdateDestroyAPIView
-from api.animal.serializers import AnimalSerializer, AnimalKindSerializer
+from api.animal.serializers import AnimalSerializer, SortAnimalSerializer
 from rest_framework.permissions import IsAuthenticated, AllowAny
+from api.animal.models import Animal, AnimalKind, SortAnimal
 from rest_framework.exceptions import ValidationError
-from api.animal.models import Animal, AnimalKind
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
@@ -24,13 +24,12 @@ class AnimalListView(ListAPIView):
 
 
 class AnimalKindListView(ListAPIView):
-    model = AnimalKind
-    serializer_class = AnimalKindSerializer
+    model = SortAnimal
+    serializer_class = SortAnimalSerializer
     permission_classes = [AllowAny]
 
     def get_queryset(self):
-        id = int(self.request.query_params.get('id'))
-        return AnimalKind.objects.prefetch_related('sort_animal').filter(sort_animal_id=id)
+        return SortAnimal.objects.all().prefetch_related('animalkind_set')
 
 
 class AnimalRetreiveUpdateView(RetrieveUpdateDestroyAPIView):
