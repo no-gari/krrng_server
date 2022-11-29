@@ -59,7 +59,11 @@ class HospitalSearchView(ListAPIView):
 
     def get_queryset(self):
         keyword = self.request.query_params.get('keyword')
-        hospital_list = Hospital.objects.filter(name__icontains=keyword, is_visible=True).prefetch_related("hospitalprice_set")
+        best_part = int(self.request.query_params.get('bestpart'))
+        if keyword is None:
+            hospital_list = Hospital.objects.prefetch_related("hospitalprice_set", 'best_part').filter(is_visible=True, best_part__in=[best_part])
+        else:
+            hospital_list = Hospital.objects.filter(name__icontains=keyword, is_visible=True).prefetch_related("hospitalprice_set")
         return hospital_list
 
     def list(self, request, *args, **kwargs):

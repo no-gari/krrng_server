@@ -46,7 +46,7 @@ class HospitalListSerializer(serializers.ModelSerializer):
         return int(distance)
 
     def get_review_count(self, obj):
-        reviews = obj.hospitalreview_set.count()
+        reviews = obj.hospital_reviews.all().count()
         return reviews
 
     def get_image(self, obj):
