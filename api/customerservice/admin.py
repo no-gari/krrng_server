@@ -20,8 +20,3 @@ class FAQMenuAdmin(admin.ModelAdmin):
 @admin.register(Offer)
 class OfferAdmin(admin.ModelAdmin):
     pass
-
-
-# @admin.register(HospitalReviewReport)
-# class HospitalReviewReportAdmin(admin.ModelAdmin):
-#     pass

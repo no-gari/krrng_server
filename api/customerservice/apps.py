@@ -6,3 +6,6 @@ class CustomerserviceConfig(AppConfig):
     name = 'api.customerservice'
     verbose_name = 'CS 관리'
     icon = 'fa fa-check'
+
+    def ready(self):
+        import api.customerservice.signals

@@ -88,7 +88,7 @@ class ProfileRetrieveAPIView(RetrieveAPIView):
     allowed_methods = ['GET']
 
     def get_queryset(self):
-        return Profile.objects.all().prefetch_related('animal_set')
+        return Profile.objects.all().prefetch_related('animal_set', 'user')
 
     def get_object(self):
         return Profile.objects.get(user=self.request.user)

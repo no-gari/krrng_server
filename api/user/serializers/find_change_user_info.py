@@ -107,9 +107,14 @@ class FindPasswordChangePasswordSerializer(serializers.Serializer):
 
 # 닉네임, 생년월일, 성별, 프로필 사진 변경 및 가져오기
 class ProfileSerializer(serializers.ModelSerializer):
+    phone = serializers.SerializerMethodField(read_only=True)
+
     class Meta:
         model = Profile
-        fields = ['nickname', 'profile_image', 'birthday', 'sex_choices']
+        fields = ['nickname', 'profile_image', 'birthday', 'sex_choices', 'phone']
+
+    def get_phone(self, obj):
+        return obj.user.phone
 
 
 class ProfileRetrieveSerializer(serializers.ModelSerializer):

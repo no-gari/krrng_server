@@ -72,7 +72,9 @@ class UserRegisterSerializer(serializers.Serializer):
         email = validated_data['user_id'] + '@krrng.com'
         password = validated_data['password']
         phone = validated_data['phone']
-        user, created = User.objects.get_or_create(email=email, phone=phone, password=make_password(password))
+        user, created = User.objects.get_or_create(email=email, password=make_password(password))
+        user.phone = phone
+        user.save()
 
         if created:
             user_profile = Profile.objects.create(user=user, nickname=validated_data['user_id'])
