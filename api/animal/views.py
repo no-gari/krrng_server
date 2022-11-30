@@ -57,6 +57,7 @@ def create_animal(request, *args, **kwargs):
     try:
         new_animal = Animal.objects.create(
             user=request.user,
+            name=request.data.get('name'),
             sort=request.data.get('sort'),
             birthday=request.data.get('birthday'),
             weight=request.data.get('weight'),
