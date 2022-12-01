@@ -71,7 +71,21 @@ def create_animal(request, *args, **kwargs):
             image=request.FILES.get('image')
         )
         new_animal.save()
-        return Response(status=status.HTTP_200_OK)
+        return Response(
+            {
+                'name': new_animal.name,
+                'sort': new_animal.sort,
+                'birthday': new_animal.birthday,
+                'weight': new_animal.weight,
+                'kind': new_animal.kind,
+                'hospital_address': new_animal.hospital_address,
+                'hospital_address_detail': new_animal.hospital_address_detail,
+                'interested_disease': new_animal.interested_disease,
+                'neuter_choices': new_animal.neuter_choices,
+                'has_alergy': new_animal.has_alergy,
+                'sex_choices': new_animal.sex_choices,
+                'image': new_animal.image.url
+            }, status=status.HTTP_200_OK)
     except:
         return ValidationError({'error_msg': '다시 한 번 시도 해주세요.'})
 
