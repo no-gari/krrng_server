@@ -100,6 +100,7 @@ class ProfileUpdateAPIView(UpdateAPIView):
     permission_classes = [IsAuthenticated]
     queryset = Profile.objects.all()
     allowed_methods = ['PATCH']
+    lookup_field = 'pk'
 
     def get_object(self):
         return Profile.objects.get(user=self.request.user)
