@@ -28,7 +28,7 @@ urlpatterns = [
 
     # 프로필 가져오기
     path('profile/', ProfileRetrieveAPIView.as_view()),
-    path('profile/', ProfileUpdateAPIView.as_view()),
+    path('profile/update/', ProfileUpdateAPIView.as_view()),
     # path('profile/anonymous', get_anonymous_user),
     # path('profile/', ProfileUpdateView.as_view()),
 

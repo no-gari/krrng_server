@@ -99,7 +99,7 @@ class ProfileUpdateAPIView(UpdateAPIView):
     serializer_class = ProfileSerializer
     permission_classes = [IsAuthenticated]
     queryset = Profile.objects.all()
-    allowed_methods = ['GET', 'PATCH']
+    allowed_methods = ['PATCH']
 
     def get_object(self):
         return Profile.objects.get(user=self.request.user)
