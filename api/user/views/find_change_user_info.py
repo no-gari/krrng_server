@@ -117,17 +117,26 @@ def get_anonymous_user(request):
 
 
 # 비밀번호 변경
-class UserPasswordUpdateView(CreateAPIView):
-    serializer_class = UserPasswordUpdateSerializer
-    permission_classes = [IsAuthenticated]
+# class UserPasswordUpdateView(CreateAPIView):
+#     serializer_class = UserPasswordUpdateSerializer
+#     permission_classes = [IsAuthenticated]
+#
+#     def create(self, request, *args, **kwargs):
+#         serializer = self.get_serializer(data=request.data)
+#         serializer.is_valid(raise_exception=True)
+#         self.perform_create(serializer)
+#         if serializer.data.get('error') is None:
+#             password = serializer.data.get('password')
+#             user = self.request.user
+#             user.password = make_password(password)
+#             user.save()
+#             return Response(status=status.HTTP_200_OK)
 
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
-        if serializer.data.get('error') is None:
-            password = serializer.data.get('password')
-            user = self.request.user
-            user.password = make_password(password)
-            user.save()
-            return Response(status=status.HTTP_200_OK)
+
+@api_view(['POST'])
+def userPasswordUpdate(request):
+    password = request.POST.get('password')
+    user = request.user
+    user.password = make_password(password)
+    user.save()
+    return Response(status=status.HTTP_200_OK)

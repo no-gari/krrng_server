@@ -33,5 +33,5 @@ urlpatterns = [
     # path('profile/', ProfileUpdateView.as_view()),
 
     # 비밀번호 변경
-    path('update/', UserPasswordUpdateView.as_view()),
+    path('update/', userPasswordUpdate),
 ]
