@@ -106,16 +106,6 @@ class ProfileUpdateAPIView(UpdateAPIView):
         return Profile.objects.get(user=self.request.user)
 
 
-@api_view(['GET'])
-def get_anonymous_user(request):
-    return Response({
-        'nickname': '',
-        'profile_image': '',
-        'birthday': '',
-        'sex_choices': ''
-    }, status=status.HTTP_200_OK)
-
-
 @api_view(['POST'])
 def userPasswordUpdate(request):
     password = request.POST.get('password')

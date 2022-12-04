@@ -116,10 +116,14 @@ class ProfileRetrieveSerializer(serializers.ModelSerializer):
     animals = serializers.SerializerMethodField(read_only=True)
     phone = serializers.SerializerMethodField(read_only=True)
     email = serializers.SerializerMethodField(read_only=True)
+    id = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = Profile
-        fields = ['nickname', 'profile_image', 'birthday', 'sex_choices', 'animals', 'phone', 'email']
+        fields = ['id', 'nickname', 'profile_image', 'birthday', 'sex_choices', 'animals', 'phone', 'email']
+
+    def get_id(self, obj):
+        return obj.user.id
 
     def get_animals(self, obj):
         user_animals = obj.user.animal_set.all()
