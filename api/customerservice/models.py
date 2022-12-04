@@ -70,7 +70,7 @@ class Offer(models.Model):
     user_hospital = models.CharField(max_length=128, verbose_name='신청자 소속')
     user_level = models.CharField(max_length=128, verbose_name='신청자 직책')
     methods = models.CharField(max_length=128, verbose_name='제휴 및 문의 경로')
-    condition = models.CharField(max_length=1, verbose_name='상태', choices=OFFER_STATUS)
+    condition = models.CharField(max_length=1, verbose_name='상태', choices=OFFER_STATUS, default='O')
     additional_info = models.TextField(verbose_name='비고')
 
     class Meta:

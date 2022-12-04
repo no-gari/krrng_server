@@ -9,7 +9,7 @@ class NoticeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Notice
-        fields = ('name', 'content', 'created_at', 'is_expanded', )
+        fields = ('name', 'content', 'created_at', 'is_expanded',)
 
     def get_is_expanded(self, obj):
         return False
@@ -32,7 +32,7 @@ class FAQMenuSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = FAQMenu
-        fields = ('name', 'id', 'faq', )
+        fields = ('name', 'id', 'faq',)
 
     def get_faq(self, obj):
         faqs = obj.faq_set.all()
@@ -44,16 +44,28 @@ class FAQSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = FAQ
-        fields = ('name', 'content', 'id', 'is_expanded', )
+        fields = ('name', 'content', 'id', 'is_expanded',)
 
     def get_is_expanded(self, obj):
         return False
 
 
 class OfferSerializer(serializers.ModelSerializer):
+    hospital_name = serializers.CharField(required=False)
+    hospital_address = serializers.CharField(required=False)
+    user_name = serializers.CharField(required=False)
+    user_email = serializers.CharField(required=False)
+    user_phone = serializers.CharField(required=False)
+    user_hospital = serializers.CharField(required=False)
+    user_level = serializers.CharField(required=False)
+    methods = serializers.CharField(required=False)
+    # condition = serializers.CharField(required=False)
+    additional_info = serializers.CharField(required=False)
+
     class Meta:
         model = Offer
-        fields = '__all__'
+        fields = ('hospital_name', 'hospital_address', 'user_name', 'user_email',
+                  'user_phone', 'user_hospital', 'user_level', 'methods', 'additional_info', )
 
 
 class HospitalReviewReportSerializer(serializers.ModelSerializer):
