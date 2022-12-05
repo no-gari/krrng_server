@@ -4,18 +4,21 @@ from api.review.models import HospitalReview
 
 
 class Notification(models.Model):
-    sort = models.CharField(max_length=32, verbose_name='종류', default='공지')
+    sort = models.CharField(max_length=32, verbose_name='종류', default='공지',
+                            help_text='"공지", "포인트" 등 알림 종류가 들어갑니다.')
     user = models.ForeignKey(User, verbose_name='유저', null=True, blank=True, on_delete=models.CASCADE)
-    name = models.CharField(max_length=1024, verbose_name='알림 제목')
+    title = models.CharField(max_length=1024, verbose_name='알림 제목')
     content = models.TextField(verbose_name='알림 내용')
     created_at = models.DateField(auto_now_add=True, verbose_name='생성 시간')
+    is_read = models.BooleanField(verbose_name='사용자 열람 여부', default=False)
+    is_deleted = models.BooleanField(verbose_name='사용자 알림 제거 여부', default=False)
 
     class Meta:
         verbose_name = '알림'
         verbose_name_plural = verbose_name
 
     def __str__(self):
-        return self.name
+        return self.title
 
 
 class Notice(models.Model):

@@ -1,8 +1,10 @@
-from .serializers import FAQSerializer, OfferSerializer, HospitalReviewReportSerializer, \
-    NotificationSerializer, NoticeSerializer, FAQMenuSerializer
+from rest_framework.generics import CreateAPIView, ListAPIView, DestroyAPIView, UpdateAPIView
 from .models import FAQ, Offer, HospitalReviewReport, Notification, Notice, FAQMenu
-from rest_framework.generics import CreateAPIView, ListAPIView, DestroyAPIView
+from .serializers import FAQSerializer, OfferSerializer, NotificationSerializer, \
+    HospitalReviewReportSerializer, NoticeSerializer, FAQMenuSerializer
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.exceptions import ValidationError
+from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 import json
@@ -10,23 +12,60 @@ import json
 
 class NotificationAPIView(ListAPIView):
     serializer_class = NotificationSerializer
-    queryset = Notification.objects.all()
     permission_classes = [IsAuthenticated]
 
+    def get_queryset(self):
+        return Notification.objects.filter(user=self.request.user, is_deleted=False).prefetch_related('user').order_by('-id')
 
-class NoticeAPIView(ListAPIView):
+
+@api_view(['GET'])
+def notificationReadAll(request):
+    try:
+        notifications = Notification.objects.filter(
+            user=request.user, is_read=False, is_deleted=False
+        ).prefetch_related('user')
+        for noti in notifications:
+            noti.is_read = True
+            noti.save()
+        return Response(status=status.HTTP_200_OK)
+    except:
+        raise ValidationError()
+
+
+@api_view(['DELETE'])
+def notificationDelete(request, *args, **kwargs):
+    try:
+        noti = Notification.objects.get(id=kwargs['pk'])
+        noti.is_deleted = True
+        noti.save()
+        return Response(status=status.HTTP_200_OK)
+    except:
+        raise ValidationError()
+
+
+class NotificationUpdateView(UpdateAPIView):
     serializer_class = NoticeSerializer
-    queryset = Notice.objects.all()
+    permission_classes = [IsAuthenticated]
+    queryset = Notification.objects.prefetch_related('user')
+    lookup_field = ['pk']
+
+    def get_object(self):
+        return Notification.objects.get(id=self.kwargs['pk'])
 
 
 class NotificationDestroyView(DestroyAPIView):
     serializer_class = NoticeSerializer
     queryset = Notification.objects.all()
-    permission_classes = (IsAuthenticated, )
+    permission_classes = (IsAuthenticated,)
     lookup_field = 'pk'
 
     def get_object(self):
         return Notification.objects.get(id=self.kwargs['pk'], user=self.request.user)
+
+
+class NoticeAPIView(ListAPIView):
+    serializer_class = NoticeSerializer
+    queryset = Notice.objects.all()
 
 
 class FAQListAPIView(ListAPIView):

@@ -20,7 +20,7 @@ class NotificationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Notification
-        fields = '__all__'
+        fields = ('sort', 'title', 'content', 'created_at', 'timesince', )
 
     def get_timesince(self, obj):
         from django.utils.timesince import timesince

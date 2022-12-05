@@ -4,8 +4,11 @@ url = "https://onesignal.com/api/v1/notifications"
 
 payload = {
     # "included_segments": ["Subscribed Users"],
-    "included_segments": [
-        "All"
+    # "included_segments": [
+    #     ""
+    # ],
+    "include_external_user_ids": [
+        '8'
     ],
     "app_id": "c028e613-8406-43a8-ba01-fbff5754aa95",
     "headings": {
