@@ -122,7 +122,7 @@ class ProfileRetrieveSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Profile
-        fields = ['id', 'nickname', 'profile_image', 'birthday', 'sex_choices', 'animals', 'phone', 'email']
+        fields = ['id', 'noti', 'nickname', 'profile_image', 'birthday', 'sex_choices', 'animals', 'phone', 'email']
 
     def get_id(self, obj):
         return obj.user.id
