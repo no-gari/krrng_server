@@ -4,6 +4,7 @@ from rest_framework import serializers
 from api.logger.models import PhoneLog
 from api.user.validators import validate_password
 from api.animal.serializers import AnimalSerializer
+from api.customerservice.models import Notification
 from rest_framework.exceptions import ValidationError
 from django.contrib.auth.hashers import make_password
 from api.user.models import User, Profile, PhoneVerifier
@@ -117,6 +118,7 @@ class ProfileRetrieveSerializer(serializers.ModelSerializer):
     phone = serializers.SerializerMethodField(read_only=True)
     email = serializers.SerializerMethodField(read_only=True)
     id = serializers.SerializerMethodField(read_only=True)
+    noti = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = Profile
@@ -134,6 +136,13 @@ class ProfileRetrieveSerializer(serializers.ModelSerializer):
 
     def get_email(self, obj):
         return obj.user.email
+
+    def get_noti(self, obj):
+        noti = Notification.objects.filter(user=obj.user, is_read=False)
+        if noti.exists():
+            return True
+        else:
+            return False
 
 
 # 그냥 마이페이지에서 비밀번호 변경
