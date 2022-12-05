@@ -9,7 +9,7 @@ class Notification(models.Model):
     user = models.ForeignKey(User, verbose_name='유저', null=True, blank=True, on_delete=models.CASCADE)
     title = models.CharField(max_length=1024, verbose_name='알림 제목')
     content = models.TextField(verbose_name='알림 내용')
-    created_at = models.DateField(auto_now_add=True, verbose_name='생성 시간')
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='생성 시간')
     is_read = models.BooleanField(verbose_name='사용자 열람 여부', default=False)
     is_deleted = models.BooleanField(verbose_name='사용자 알림 제거 여부', default=False)
 
