@@ -38,7 +38,8 @@ def notificationDelete(request, *args, **kwargs):
         noti = Notification.objects.get(id=kwargs['pk'])
         noti.is_deleted = True
         noti.save()
-        return Response(status=status.HTTP_200_OK)
+        notis = Notification.objects.filter(user=request.user, is_deleted=False).prefetch_related('user').order_by('-id')
+        return Response(NotificationSerializer(notis, many=True).data, status=status.HTTP_200_OK)
     except:
         raise ValidationError()
 
