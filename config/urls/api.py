@@ -1,7 +1,8 @@
-from drf_yasg.views import get_schema_view
+from api.user.views.find_change_user_info import redirectOneLink
 from django.urls import path, include, re_path
-from django.conf import settings
+from drf_yasg.views import get_schema_view
 from django.contrib import admin
+from django.conf import settings
 from drf_yasg import openapi
 
 schema_view = get_schema_view(
@@ -17,7 +18,8 @@ schema_view = get_schema_view(
 urlpatterns = [
     path('api/v1/', include('api.urls')),
     path('admin/', admin.site.urls),
-    path('', schema_view.with_ui('swagger', cache_timeout=None), name='schema-swagger-ui'),
+    path('swagger/', schema_view.with_ui('swagger', cache_timeout=None), name='schema-swagger-ui'),
+    path('', redirectOneLink)
 ]
 
 if settings.DEBUG:

@@ -1,5 +1,6 @@
+from rest_framework import status
+from django.shortcuts import redirect
 from rest_framework.response import Response
-from rest_framework import serializers, status
 from rest_framework.decorators import api_view
 from rest_framework.permissions import IsAuthenticated
 from api.user.serializers.find_change_user_info import *
@@ -113,3 +114,8 @@ def userPasswordUpdate(request):
     user.password = make_password(password)
     user.save()
     return Response(status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+def redirectOneLink(request):
+    return redirect('https://onelink.to/82ttrz/')
