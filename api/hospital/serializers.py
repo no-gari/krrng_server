@@ -25,8 +25,7 @@ class HospitalListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Hospital
-        exclude = ('is_visible', 'available_animal', 'best_part', 'latitude', 'longitude', 'rest_date',
-                   'available_time', 'number', 'intro', 'latitude', 'longitude', )
+        exclude = ('is_visible', 'available_animal', 'best_part', 'rest_date', 'available_time', 'number', 'intro', )
 
     def get_price(self, obj):
         disease = self.context['request'].query_params.get('disease', None)
