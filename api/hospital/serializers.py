@@ -29,7 +29,7 @@ class HospitalListSerializer(serializers.ModelSerializer):
 
     def get_price(self, obj):
         disease = self.context['request'].query_params.get('disease', None)
-        if disease is None:
+        if disease == '0':
             hospital_price = HospitalPrice.objects.filter(hospital=obj).aggregate(Min('price'))
             return hospital_price['price__min']
         else:

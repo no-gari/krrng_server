@@ -14,10 +14,10 @@ class HospitalListView(ListAPIView):
     permission_classes = [AllowAny]
 
     def get_queryset(self):
-        disease = self.request.query_params.get('disease')
-        best_part = self.request.query_params.get('bestPart')
+        disease = self.request.query_params.get('disease', 0)
+        best_part = self.request.query_params.get('bestPart', 0)
         if best_part == '0' and disease == '0':
-            hospital_list = Hospital.objects.filter(s_visible=True).prefetch_related('hospitalprice_set', 'best_part')
+            hospital_list = Hospital.objects.filter(is_visible=True).prefetch_related('hospitalprice_set', 'best_part')
         else:
             if best_part == 0:
                 hospital_list = Hospital.objects.filter(

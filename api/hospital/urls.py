@@ -2,7 +2,7 @@ from api.hospital.views import HospitalListView, HospitalDetailView, HospitalSea
 from django.urls import path
 
 urlpatterns = [
-    path('list/', HospitalListView.as_view()),
-    path('search/', HospitalSearchView.as_view()),
     path('detail/<int:pk>/', HospitalDetailView.as_view()),
+    path('search/', HospitalSearchView.as_view()),
+    path('list/', HospitalListView.as_view()),
 ]
