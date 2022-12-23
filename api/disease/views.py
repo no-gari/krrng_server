@@ -13,5 +13,5 @@ class DiseaseListView(ListAPIView):
         disease_list = Disease.objects.filter(
             Q(symptom__name__icontains=keyword)|
             Q(name__icontains=keyword)
-        )
+        ).distinct()
         return disease_list
