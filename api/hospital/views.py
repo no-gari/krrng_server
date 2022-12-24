@@ -59,18 +59,45 @@ class HospitalSearchView(ListAPIView):
 
     def get_queryset(self):
         keyword = self.request.query_params.get('keyword')
-        best_part = int(self.request.query_params.get('bestpart'))
-        if keyword is None:
-            hospital_list = Hospital.objects.prefetch_related("hospitalprice_set", 'best_part').filter(is_visible=True, best_part__in=[best_part])
+        disease = self.request.query_params.get('disease')
+        best_part = self.request.query_params.get('bestPart')
+        if best_part == '0' and disease == '0':
+            hospital_list = Hospital.objects.filter(is_visible=True, name__icontains=keyword).prefetch_related('hospitalprice_set', 'best_part')
         else:
-            hospital_list = Hospital.objects.filter(name__icontains=keyword, is_visible=True).prefetch_related("hospitalprice_set")
+            if best_part == '0':
+                hospital_list = Hospital.objects.filter(
+                    name__icontains=keyword,
+                    hospitalprice__disease__in=[int(disease)],
+                    is_visible=True
+                ).prefetch_related("hospitalprice_set", 'best_part')
+            elif disease == '0':
+                hospital_list = Hospital.objects.filter(
+                    name__icontains=keyword,
+                    best_part__in=[int(best_part)],
+                    is_visible=True
+                ).prefetch_related("hospitalprice_set", 'best_part')
+            else:
+                hospital_list = Hospital.objects.filter(
+                    name__icontains=keyword,
+                    best_part__in=[int(best_part)],
+                    hospitalprice__disease__in=[int(disease)],
+                    is_visible=True
+                ).prefetch_related("hospitalprice_set", 'best_part')
         return hospital_list
 
     def list(self, request, *args, **kwargs):
         data = super().list(request, *args, **kwargs).data
         json_str = json.dumps(data)
         json_object = json.loads(json_str)
-        new_data = sorted(json_object, key=lambda k: k['distance'], reverse=False)
+        sort = request.query_params.get('filter')
+        if sort == 'distance':
+            new_data = sorted(json_object, key=lambda k: k['distance'], reverse=False)
+        elif sort == 'price':
+            new_data = sorted(json_object, key=lambda k: k['price'], reverse=False)
+        elif sort == 'recommend':
+            new_data = sorted(json_object, key=lambda k: k['recommend'], reverse=True)
+        else:
+            new_data = sorted(json_object, key=lambda k: k['review_count'], reverse=True)
         return Response(new_data, status=status.HTTP_200_OK)
 
 
@@ -87,7 +114,4 @@ class HospitalDetailView(RetrieveAPIView):
             'hospitalimage_set', 'hospitalreview_set', 'hospitalprice_set'
         ).prefetch_related(
             Prefetch('hospitalreview_set', queryset=HospitalReview.objects.prefetch_related(
-                'like_users', 'hospitalreviewimage_set', 'hospitalrecieptimage_set'
-            )
-        )
-    )
+                'like_users', 'hospitalreviewimage_set', 'hospitalrecieptimage_set')))
