@@ -48,9 +48,9 @@ class HospitalPriceAdmin(admin.ModelAdmin):
     pass
 
 
-# @admin.register(BestPart)
-# class BestPartAdmin(admin.ModelAdmin):
-#     pass
+@admin.register(BestPart)
+class BestPartAdmin(admin.ModelAdmin):
+    pass
 
 
 @admin.register(AvailableAnimal)

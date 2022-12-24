@@ -19,12 +19,12 @@ class HospitalListView(ListAPIView):
         if best_part == '0' and disease == '0':
             hospital_list = Hospital.objects.filter(is_visible=True).prefetch_related('hospitalprice_set', 'best_part')
         else:
-            if best_part == 0:
+            if best_part == '0':
                 hospital_list = Hospital.objects.filter(
                     hospitalprice__disease__in=[int(disease)],
                     is_visible=True
                 ).prefetch_related("hospitalprice_set", 'best_part')
-            elif disease == 0:
+            elif disease == '0':
                 hospital_list = Hospital.objects.filter(
                     best_part__in=[int(best_part)],
                     is_visible=True
