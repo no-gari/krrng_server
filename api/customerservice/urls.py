@@ -1,5 +1,5 @@
 from .views import FAQListAPIView, OfferCreateAPIView, FAQMenuListView, HospitalReviewReportCreateAPIView, \
-    NoticeAPIView, NotificationAPIView, NotificationDestroyView, notificationDelete, notificationReadAll
+    NoticeAPIView, NotificationAPIView, NotificationDestroyView, notificationDelete, notificationReadAll, app_version
 from django.urls import path
 
 
@@ -13,4 +13,5 @@ urlpatterns = [
     path('notification/delete/<int:pk>/', notificationDelete),
     path('notification/read-all/', notificationReadAll),
     path('notification/list/', NotificationAPIView.as_view()),
+    path('app-version/', app_version),
 ]

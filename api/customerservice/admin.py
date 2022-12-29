@@ -1,4 +1,4 @@
-from .models import FAQ, Offer, FAQMenu, Notice, Notification
+from .models import FAQ, Offer, FAQMenu, Notice, Notification, AppVersion
 from django.contrib import admin
 
 
@@ -24,4 +24,9 @@ class FAQMenuAdmin(admin.ModelAdmin):
 
 @admin.register(Offer)
 class OfferAdmin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(AppVersion)
+class AppversionAdmin(admin.ModelAdmin):
     pass

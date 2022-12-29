@@ -1,5 +1,5 @@
 from api.customerservice.models import FAQ, Offer, HospitalReviewReport, \
-    HospitalReviewReportImage, Notification, Notice, FAQMenu
+    HospitalReviewReportImage, Notification, Notice, FAQMenu, AppVersion
 from rest_framework import serializers
 
 
@@ -79,3 +79,9 @@ class HospitalReviewReportSerializer(serializers.ModelSerializer):
         for image in list(images):
             temp_image = HospitalReviewReportImage.objects.create(property=self.instance, image=image)
             temp_image.save()
+
+
+class VersionInfoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AppVersion
+        fields = '__all__'

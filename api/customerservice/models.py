@@ -105,3 +105,14 @@ class HospitalReviewReportImage(models.Model):
     class Meta:
         verbose_name = '병원 리뷰 신고 이미지'
         verbose_name_plural = verbose_name
+
+
+class AppVersion(models.Model):
+    version = models.FloatField(verbose_name='버전', default=1.0)
+
+    class Meta:
+        verbose_name = '버전 정보'
+        verbose_name_plural = verbose_name
+
+    def __str__(self):
+        return str(self.version)

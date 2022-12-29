@@ -1,5 +1,5 @@
 from rest_framework.generics import CreateAPIView, ListAPIView, DestroyAPIView, UpdateAPIView
-from .models import FAQ, Offer, HospitalReviewReport, Notification, Notice, FAQMenu
+from .models import FAQ, Offer, HospitalReviewReport, Notification, Notice, FAQMenu, AppVersion
 from .serializers import FAQSerializer, OfferSerializer, NotificationSerializer, \
     HospitalReviewReportSerializer, NoticeSerializer, FAQMenuSerializer
 from rest_framework.permissions import IsAuthenticated
@@ -105,3 +105,13 @@ class OfferCreateAPIView(CreateAPIView):
 class HospitalReviewReportCreateAPIView(CreateAPIView):
     serializer_class = HospitalReviewReportSerializer
     queryset = HospitalReviewReport.objects.all()
+
+
+@api_view(['GET'])
+def app_version(request, *args, **kwargs):
+    try:
+        latest_app_version = AppVersion.objects.all().order_by('version').last()
+        app_version = latest_app_version.version
+        return Response(app_version, status=status.HTTP_200_OK)
+    except:
+        raise ValidationError()
