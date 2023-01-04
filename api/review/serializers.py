@@ -1,5 +1,5 @@
 from .models import HospitalReview, HospitalReviewImage, HospitalRecieptImage
-from django.core.files import File as DjangoFile
+from rest_framework.exceptions import ValidationError
 from rest_framework import serializers
 
 
@@ -20,6 +20,7 @@ class HospitalRecieptImageSerializer(serializers.ModelSerializer):
 
 
 class HospitalReviewSerializer(serializers.ModelSerializer):
+    is_like = serializers.SerializerMethodField()
     likes = serializers.SerializerMethodField(read_only=True)
     nickname = serializers.SerializerMethodField(read_only=True)
     review_image = serializers.SerializerMethodField(read_only=True)
@@ -27,7 +28,7 @@ class HospitalReviewSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = HospitalReview
-        fields = ('nickname', 'diagnosis', 'rates', 'content', 'likes', 'review_image', 'created_at')
+        fields = ('nickname', 'diagnosis', 'rates', 'content', 'likes', 'review_image', 'created_at', 'is_like')
 
     def get_likes(self, obj):
         return obj.like_users.count()
@@ -55,6 +56,13 @@ class HospitalReviewSerializer(serializers.ModelSerializer):
 
     def get_review_image(self, obj):
         return HospitalReviewImageSerializer(obj.hospitalreviewimage_set.all(), many=True).data
+
+    def get_is_like(self, obj):
+        user = self.context['request'].user
+        if user.is_authenticated:
+            return user in obj.like_users.all()
+        else:
+            return False
 
 
 class HospitalReviewCreateSerializer(HospitalReviewSerializer):
@@ -91,3 +99,28 @@ class HospitalReviewCreateSerializer(HospitalReviewSerializer):
             new_image.save()
 
         return validated_data
+
+
+class HospitalReviewLikeSerializer(serializers.ModelSerializer):
+    is_like = serializers.SerializerMethodField()
+
+    class Meta:
+        model = HospitalReview
+        fields = ['is_like']
+
+    def get_is_like(self, obj):
+        user = self.context['request'].user
+        if user.is_authenticated:
+            return user in obj.like_users.all()
+        else:
+            return False
+
+    def update(self, instance, validated_data):
+        user = self.context['request'].user
+        if not user.is_authenticated:
+            return ValidationError({'error_msg': '좋아요를 누르려면 로그인 해야 합니다.'})
+        if user in instance.like_users.all():
+            instance.like_users.remove(user)
+        else:
+            instance.like_users.add(user)
+        return instance

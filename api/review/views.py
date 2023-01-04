@@ -1,8 +1,8 @@
+from .serializers import HospitalReviewSerializer, HospitalReviewCreateSerializer, HospitalReviewLikeSerializer
+from rest_framework.generics import ListAPIView, CreateAPIView, RetrieveUpdateAPIView
 from rest_framework.permissions import IsAuthenticated, AllowAny
-from .serializers import HospitalReviewSerializer, HospitalReviewCreateSerializer
 from rest_framework.response import Response
 from rest_framework import viewsets
-from rest_framework.generics import ListAPIView, CreateAPIView
 from .models import HospitalReview
 
 
@@ -56,3 +56,10 @@ class HospitalReviewSet(viewsets.ModelViewSet):
 
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
+
+
+class ReviewLikeUpdateView(RetrieveUpdateAPIView):
+    queryset = HospitalReview.objects.prefetch_related('like_users').all()
+    serializer_class = HospitalReviewLikeSerializer
+    allowed_methods = ['put', 'get']
+    lookup_field = 'id'
