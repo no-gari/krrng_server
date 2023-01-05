@@ -192,3 +192,14 @@ ONESIGNAL_KEY = 'MzM5OTk3MjAtOTNkYi00ODRlLWE2YjctNDE0MDYzN2FmYzk5'
 # NAVER MAPS
 NAVER_CLIENT_ID = '392xygymnv'
 NAVER_CLIENT_SECRET = 'njSEcXknlKEVa9GTZKjaMRMsIdBs4qvPKgclwq08'
+
+
+FILE_UPLOAD_HANDLERS = [
+    'django.core.files.uploadhandler.MemoryFileUploadHandler',
+    'django.core.files.uploadhandler.TemporaryFileUploadHandler',
+]
+
+MAX_UPLOAD_SIZE = 10485760
+DATA_UPLOAD_MAX_MEMORY_SIZE = None
+FILE_UPLOAD_MAX_MEMORY_SIZE = 10485760
+DATA_UPLOAD_MAX_NUMBER_FIELDS = None
