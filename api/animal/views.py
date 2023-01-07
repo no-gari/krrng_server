@@ -1,8 +1,8 @@
-from rest_framework.generics import ListAPIView, RetrieveUpdateDestroyAPIView
-from api.animal.serializers import AnimalSerializer, SortAnimalSerializer
+from api.animal.serializers import AnimalSerializer, SortAnimalSerializer, AnimalCreateSerializer
+from rest_framework.generics import ListAPIView, RetrieveUpdateDestroyAPIView, CreateAPIView
 from rest_framework.permissions import IsAuthenticated, AllowAny
-from api.animal.models import Animal, AnimalKind, SortAnimal
 from rest_framework.exceptions import ValidationError
+from api.animal.models import Animal, SortAnimal
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
@@ -50,44 +50,11 @@ class AnimalRetreiveUpdateView(RetrieveUpdateDestroyAPIView):
         return super().patch(request, *args, **kwargs)
 
 
-@api_view(["POST"])
-def create_animal(request, *args, **kwargs):
-    if not request.user.is_authenticated:
-        return Response({'error_msg': '로그인 후 이용해주세요,'}, status=status.HTTP_400_BAD_REQUEST)
-    try:
-        new_animal = Animal.objects.create(
-            user=request.user,
-            name=request.data.get('name'),
-            sort=request.data.get('sort'),
-            birthday=request.data.get('birthday'),
-            weight=request.data.get('weight'),
-            kind=request.data.get('kind'),
-            hospital_address=request.data.get('hospital_address'),
-            hospital_address_detail=request.data.get('hospital_address_detail'),
-            interested_disease=request.data.get('interested_disease'),
-            neuter_choices=request.data.get('neuter_choices'),
-            has_alergy=request.data.get('has_alergy'),
-            sex_choices=request.data.get('sex_choices'),
-            image=request.FILES.get('image')
-        )
-        new_animal.save()
-        return Response(
-            {
-                'name': new_animal.name,
-                'sort': new_animal.sort,
-                'birthday': new_animal.birthday,
-                'weight': new_animal.weight,
-                'kind': new_animal.kind,
-                'hospital_address': new_animal.hospital_address,
-                'hospital_address_detail': new_animal.hospital_address_detail,
-                'interested_disease': new_animal.interested_disease,
-                'neuter_choices': new_animal.neuter_choices,
-                'has_alergy': new_animal.has_alergy,
-                'sex_choices': new_animal.sex_choices,
-                'image': new_animal.image.url
-            }, status=status.HTTP_200_OK)
-    except:
-        return ValidationError({'error_msg': '다시 한 번 시도 해주세요.'})
+class AnimalCreateAPIView(CreateAPIView):
+    queryset = Animal.objects.all()
+    serializer_class = AnimalCreateSerializer
+    allowed_methods = ['GET', 'POST']
+    permission_classes = [IsAuthenticated]
 
 
 @api_view(["DELETE"])
