@@ -73,7 +73,16 @@ class AnimalCreateAPIView(CreateAPIView):
             image=request.FILES.get('image')
         )
         new_animal.save()
+        kwargs['id'] = new_animal.id
         return super().post(request, *args, **kwargs)
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        headers = self.get_success_headers(serializer.data)
+        data = serializer.data
+        data['id'] = kwargs['id']
+        return Response(data, status=status.HTTP_201_CREATED, headers=headers)
 
 
 @api_view(["DELETE"])
