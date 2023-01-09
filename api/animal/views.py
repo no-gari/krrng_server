@@ -70,19 +70,24 @@ class AnimalCreateAPIView(CreateAPIView):
             neuter_choices=request.data.get('neuter_choices'),
             has_alergy=request.data.get('has_alergy'),
             sex_choices=request.data.get('sex_choices'),
-            image=request.FILES.get('image')
+            image=request.FILES.get('image'),
         )
         new_animal.save()
         kwargs['id'] = new_animal.id
+        image = request.FILES.get('image', None)
+        if image is not None:
+            kwargs['image'] = new_animal.image.url
+        else:
+            kwargs['image'] = None
         return super().post(request, *args, **kwargs)
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        headers = self.get_success_headers(serializer.data)
+        serializer.is_valid(raise_exception=False)
         data = serializer.data
         data['id'] = kwargs['id']
-        return Response(data, status=status.HTTP_201_CREATED, headers=headers)
+        data['image'] = kwargs['image']
+        return Response(data, status=status.HTTP_201_CREATED)
 
 
 @api_view(["DELETE"])

@@ -13,7 +13,7 @@ class AnimalCreateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Animal
-        fields = '__all__'
+        exclude = ('image', )
 
     def get_user(self, obj):
         return self.context['request'].user.id
