@@ -28,7 +28,7 @@ class HospitalReviewSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = HospitalReview
-        fields = ('nickname', 'diagnosis', 'rates', 'content', 'likes', 'review_image', 'created_at', 'is_like')
+        fields = ('id', 'nickname', 'diagnosis', 'rates', 'content', 'likes', 'review_image', 'created_at', 'is_like')
 
     def get_likes(self, obj):
         return obj.like_users.count()
