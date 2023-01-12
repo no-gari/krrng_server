@@ -1,6 +1,6 @@
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+from rest_framework.generics import CreateAPIView, DestroyAPIView
 from api.user.serializers.create_update_user import *
-from rest_framework.generics import CreateAPIView
 from rest_framework.response import Response
 from rest_framework import status
 
@@ -65,3 +65,14 @@ class UserRegisterView(CreateAPIView):
         if serializer.status_code == 201:
             return Response(serializer.data, status=status.HTTP_200_OK)
         return serializer
+
+
+# 회원탈퇴
+class UserDeleteView(DestroyAPIView):
+    serializer_class = UserRegisterSerializer
+
+    def delete(self, request, *args, **kwargs):
+        user = self.request.user
+        del_user = User.objects.get(id=user.id)
+        del_user.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
