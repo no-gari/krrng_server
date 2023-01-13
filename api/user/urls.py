@@ -6,6 +6,7 @@ urlpatterns = [
     # 일반 이메일 로그인 / 회원가입
     path('login/', CustomTokenObtainPairView.as_view()),
     path('email-signup/', UserRegisterView.as_view()),
+    path('email-signup/temp/', UserTempRegisterView.as_view()),
     path('delete/', UserDeleteView.as_view()),
 
     # 아이디 중복확인

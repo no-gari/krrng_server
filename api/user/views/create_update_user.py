@@ -1,4 +1,3 @@
-from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from rest_framework.generics import CreateAPIView, DestroyAPIView
 from api.user.serializers.create_update_user import *
 from rest_framework.response import Response
@@ -59,6 +58,17 @@ class CustomTokenObtainPairView(CreateAPIView):
 # 일반 회원가입
 class UserRegisterView(CreateAPIView):
     serializer_class = UserRegisterSerializer
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.create(request, *args, **kwargs)
+        if serializer.status_code == 201:
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return serializer
+
+
+# 임시 일반 회원가입
+class UserTempRegisterView(CreateAPIView):
+    serializer_class = UserTempRegisterSerializer
 
     def post(self, request, *args, **kwargs):
         serializer = self.create(request, *args, **kwargs)

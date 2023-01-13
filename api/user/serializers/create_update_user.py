@@ -91,6 +91,36 @@ class UserRegisterSerializer(serializers.Serializer):
         }
 
 
+# 회원가입
+class UserTempRegisterSerializer(serializers.Serializer):
+    user_id = serializers.CharField(write_only=True, required=True)
+    password = serializers.CharField(write_only=True, required=True)
+    access = serializers.CharField(read_only=True)
+    refresh = serializers.CharField(read_only=True)
+
+    @transaction.atomic
+    def create(self, validated_data):
+        user_id = validated_data['user_id']
+        if len(user_id.split('@')) == 2:
+            user = User.objects.get(email=user_id)
+            user.phone = validated_data['phone']
+            user.save()
+        else:
+            email = validated_data['user_id'] + '@krrng.com'
+            password = validated_data['password']
+            user, created = User.objects.get_or_create(email=email, password=make_password(password))
+
+            if created:
+                user_profile = Profile.objects.create(user=user, nickname=validated_data['user_id'])
+                user_profile.save()
+
+        refresh = RefreshToken.for_user(user)
+        return {
+            'access': refresh.access_token,
+            'refresh': refresh,
+        }
+
+
 # 소셜 로그인
 class UserSocialLoginSerializer(serializers.Serializer):
     access = serializers.CharField(read_only=True)
