@@ -151,7 +151,7 @@ class UserSocialLoginSerializer(serializers.Serializer):
         user, created = User.objects.get_or_create(email=email, defaults={'password': make_password(None)})
 
         if created:
-            user_profile = Profile.objects.create(user=user, nickname=nickname, kind=social_type, code=code)
+            user_profile = Profile.objects.create(user=user, nickname=nickname, kind=social_type, code=code, birthday=datetime.date.today())
             user_profile.save()
 
         refresh = RefreshToken.for_user(user)

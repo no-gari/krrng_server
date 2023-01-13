@@ -108,7 +108,7 @@ class HospitalReviewReportImage(models.Model):
 
 
 class AppVersion(models.Model):
-    version = models.FloatField(verbose_name='버전', default=1.0)
+    version = models.CharField(verbose_name='버전', max_length=64, null=True, blank=True)
 
     class Meta:
         verbose_name = '버전 정보'

@@ -15,7 +15,7 @@ class NotificationAPIView(ListAPIView):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return Notification.objects.filter(user=self.request.user, is_deleted=False).prefetch_related('user').order_by('id')
+        return Notification.objects.filter(user=self.request.user, is_deleted=False).prefetch_related('user').order_by('-id')
 
 
 @api_view(['GET'])
@@ -66,7 +66,7 @@ class NotificationDestroyView(DestroyAPIView):
 
 class NoticeAPIView(ListAPIView):
     serializer_class = NoticeSerializer
-    queryset = Notice.objects.all()
+    queryset = Notice.objects.all().order_by('-id')
 
 
 class FAQListAPIView(ListAPIView):
