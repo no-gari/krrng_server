@@ -1,3 +1,4 @@
+import datetime
 import random
 from django.db import transaction
 from api.logger.models import PhoneLog
@@ -111,7 +112,7 @@ class UserTempRegisterSerializer(serializers.Serializer):
             user, created = User.objects.get_or_create(email=email, password=make_password(password))
 
             if created:
-                user_profile = Profile.objects.create(user=user, nickname=validated_data['user_id'])
+                user_profile = Profile.objects.create(user=user, nickname=validated_data['user_id'], birthday=datetime.date.today())
                 user_profile.save()
 
         refresh = RefreshToken.for_user(user)
