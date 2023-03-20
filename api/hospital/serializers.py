@@ -49,7 +49,10 @@ class HospitalListSerializer(serializers.ModelSerializer):
         return reviews
 
     def get_image(self, obj):
-        image_url = obj.hospitalimage_set.first().image.url
+        try:
+            image_url = obj.hospitalimage_set.first().image.url
+        except:
+            image_url = 'https://img.freepik.com/free-vector/illustration-of-a-hospital_53876-81075.jpg'
         return image_url
 
 
