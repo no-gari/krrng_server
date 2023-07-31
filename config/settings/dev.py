@@ -20,21 +20,6 @@ if DB == 'sqlite':
             'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
         }
     }
-if DB == 'mysql':
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.mysql',
-            'NAME': 'krrngrds',
-            'USER': 'krrngrds',
-            'PASSWORD': 'krrngrds',
-            'HOST': 'krrngrds.ci0gyj4wz5ig.ap-northeast-2.rds.amazonaws.com',
-            'PORT': '3306',
-            'OPTIONS': {
-                'charset': 'utf8mb4',
-                'use_unicode': True,
-            }
-        }
-    }
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
